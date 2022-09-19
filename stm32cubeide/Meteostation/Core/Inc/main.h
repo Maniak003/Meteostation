@@ -35,6 +35,9 @@ extern "C" {
 //#define TMP117_ENABLE
 #define BME280_ENABLE
 #define DISPLAY_1306
+#define COLUMN0 0
+#define COLUMN1 58
+#define COLUMN2 97
 #include <stm32f1xx_hal_i2c.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,6 +78,7 @@ extern "C" {
 #define POWER_PULSE POWER_PULSE_GPIO_Port->BSRR = (uint32_t)POWER_PULSE_Pin; POWER_PULSE_GPIO_Port->BSRR = (uint32_t)POWER_PULSE_Pin << 16u;
 #define POWER_VOLTAGE 1004
 #define TRUST_INTERVAL 900 /* 3 sigma*/
+#define GM_CPS2URh 4.8
 #define MEAS_INTERVAL 1000
 /* USER CODE END ET */
 
