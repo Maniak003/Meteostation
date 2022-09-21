@@ -63,15 +63,23 @@ char uart_buffer[10] = {0,};
 char SndBuffer[200] = {0,};
 char text1306[16];
 uint16_t gm_counter = 0;
-uint32_t gm_interval = 0;
+uint32_t gm_interval = 0, ntp_interval = 0;
 float gm_cps = 0;
+
+#ifdef ZABBIX_ENABLE
 wiz_NetInfo net_info = {
 	.mac  = { MAC_ADDRESS },
 	.dhcp = NETINFO_DHCP
 };
+uint8_t ntp_server[4] = {192, 168, 1, 6};
+uint8_t gDATABUF[DATA_BUF_SIZE];
+datetime timeNTP;
+#endif
+
 RTC_TimeTypeDef sTime = {0};
 RTC_DateTypeDef DateToUpdate = {0};
 char trans_str[64] = {0,};
+bool first_start = TRUE;
 
 /* USER CODE END PV */
 
@@ -94,6 +102,8 @@ static void MX_RTC_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+#ifdef ZABBIX_ENABLE
+
 #ifdef ZABBIX_DEBUG
 void UART_Printf(const char* fmt, ...) {
 	char buff[256];
@@ -334,7 +344,7 @@ void init_w5500() {
     wizchip_setnetinfo(&net_info);
 
 }
-
+#endif
 /* USER CODE END 0 */
 
 /**
@@ -397,6 +407,7 @@ int main(void)
   HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_SET);
   HAL_Delay(2000);
   init_w5500();
+  SNTP_init(0, ntp_server, 28, gDATABUF);
 #else
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET);	// Reset W5500
 #endif
@@ -434,46 +445,69 @@ int main(void)
 				#endif
 
 				#ifdef DISPLAY_1306
-				  ssd1306_Fill(0);
-				  sprintf(text1306, "T:%.1f", temperature);
-				  ssd1306_SetCursor(COLUMN0, 0);
-				  ssd1306_WriteString(text1306, Font_6x8, 0x01);
-				  sprintf(text1306, "P:%.0f", pressure);
-				  ssd1306_SetCursor(COLUMN0, 8);
-				  ssd1306_WriteString(text1306, Font_6x8, 0x01);
-				  sprintf(text1306, "H:%.1f", humidity);
-				  ssd1306_SetCursor(COLUMN0, 16);
-				  ssd1306_WriteString(text1306, Font_6x8, 0x01);
+				ssd1306_Fill(0);
+				/* Температура */
+				sprintf(text1306, "T:%.1f", temperature);
+				ssd1306_SetCursor(COLUMN0, 0);
+				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
-				  sprintf(text1306, "CO2:%.0f", 2000.0);
-				  ssd1306_SetCursor(COLUMN0, 24);
-				  ssd1306_WriteString(text1306, Font_6x8, 0x01);
+				/* Давление */
+				sprintf(text1306, "P:%.0f", pressure);
+				ssd1306_SetCursor(COLUMN0, 8);
+				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
-				  sprintf(text1306, "C:%d", gm_counter);
-				  ssd1306_SetCursor(COLUMN1, 0);
-				  ssd1306_WriteString(text1306, Font_6x8, 0x01);
+				/* Влажность */
+				sprintf(text1306, "H:%.1f", humidity);
+				ssd1306_SetCursor(COLUMN0, 16);
+				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
-				  sprintf(text1306, "%.2fcps", gm_cps);
-				  ssd1306_SetCursor(COLUMN1, 8);
-				  ssd1306_WriteString(text1306, Font_6x8, 0x01);
+				/* CO2 */
+				sprintf(text1306, "CO2:%.0f", 2000.0);
+				ssd1306_SetCursor(COLUMN0, 24);
+				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
-				  sprintf(text1306, "%.1fuRh", gm_cps * GM_CPS2URh);
-				  ssd1306_SetCursor(COLUMN1, 16);
-				  ssd1306_WriteString(text1306, Font_6x8, 0x01);
+				/* Дозиметр */
+				sprintf(text1306, "C:%d", gm_counter);
+				ssd1306_SetCursor(COLUMN1, 0);
+				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
-				  sprintf(text1306, "%.0fv", hvLevel * 0.398);
-				  ssd1306_SetCursor(COLUMN1, 24);
-				  ssd1306_WriteString(text1306, Font_6x8, 0x01);
+				sprintf(text1306, "%.2fcps", gm_cps);
+				ssd1306_SetCursor(COLUMN1, 8);
+				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
-				  HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-				  sprintf(text1306, "%2.0d:%2.0d", sTime.Hours, sTime.Minutes);
-				  ssd1306_SetCursor(COLUMN2, 0);
-				  ssd1306_WriteString(text1306, Font_6x8, 0x01);
+				sprintf(text1306, "%.1fuRh", gm_cps * GM_CPS2URh);
+				ssd1306_SetCursor(COLUMN1, 16);
+				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
-				  ssd1306_UpdateScreen();
+				/* Высокое напряжение */
+				sprintf(text1306, "%.0fv", hvLevel * 0.398);
+				ssd1306_SetCursor(COLUMN1, 24);
+				ssd1306_WriteString(text1306, Font_6x8, 0x01);
+
+				#ifdef ZABBIX_ENABLE
+				/* Часы */
+				HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+				sprintf(text1306, "%2.0d:%.2i", sTime.Hours, sTime.Minutes);
+				ssd1306_SetCursor(COLUMN2, 0);
+				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 				#endif
+
+				ssd1306_UpdateScreen();
+				#endif
+				HAL_IWDG_Refresh(&hiwdg);
 	  	  	}
-		HAL_IWDG_Refresh(&hiwdg);
+		#ifdef ZABBIX_ENABLE
+	  	/* Настройка времени через NTP */
+		if ((HAL_GetTick() - ntp_interval > NTP_INTERVAL) || first_start) {
+			first_start = FALSE;
+			ntp_interval = HAL_GetTick();
+			do {} while (SNTP_run(&timeNTP) != 1);
+			sTime.Hours = timeNTP.hh;
+			sTime.Minutes = timeNTP.mm;
+			sTime.Seconds = timeNTP.ss;
+			HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+		}
+		#endif
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -680,9 +714,6 @@ static void MX_RTC_Init(void)
 
   /* USER CODE END RTC_Init 0 */
 
-  RTC_TimeTypeDef sTime = {0};
-  RTC_DateTypeDef DateToUpdate = {0};
-
   /* USER CODE BEGIN RTC_Init 1 */
 
   /* USER CODE END RTC_Init 1 */
@@ -692,30 +723,6 @@ static void MX_RTC_Init(void)
   hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;
   hrtc.Init.OutPut = RTC_OUTPUTSOURCE_ALARM;
   if (HAL_RTC_Init(&hrtc) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /* USER CODE BEGIN Check_RTC_BKUP */
-
-  /* USER CODE END Check_RTC_BKUP */
-
-  /** Initialize RTC and set the Time and Date
-  */
-  sTime.Hours = 0x21;
-  sTime.Minutes = 0x3;
-  sTime.Seconds = 0x0;
-
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  DateToUpdate.WeekDay = RTC_WEEKDAY_MONDAY;
-  DateToUpdate.Month = RTC_MONTH_JANUARY;
-  DateToUpdate.Date = 0x1;
-  DateToUpdate.Year = 0x0;
-
-  if (HAL_RTC_SetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BCD) != HAL_OK)
   {
     Error_Handler();
   }

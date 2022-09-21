@@ -38,7 +38,6 @@ extern "C" {
 #define COLUMN0 0
 #define COLUMN1 58
 #define COLUMN2 97
-#include <stm32f1xx_hal_i2c.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -47,6 +46,7 @@ extern "C" {
 #include "wizchip_conf.h"
 #include "dhcp.h"
 #include "dns.h"
+#include "sntp.h"
 #include "socket.h"
 #include "stdarg.h"
 #ifdef TMP117_ENABLE
@@ -80,6 +80,7 @@ extern "C" {
 #define TRUST_INTERVAL 900 /* 3 sigma*/
 #define GM_CPS2URh 4.8
 #define MEAS_INTERVAL 1000
+#define NTP_INTERVAL 3600000 /* 1 час */
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -153,6 +154,7 @@ float temperature, pressure, humidity;
 #define _DHCP_DEBUG_
 
 //#define ZABBIX_DEBUG
+#define DATA_BUF_SIZE   1024
 #define ZABBIX_ENABLE
 #define ZABBIXAGHOST	"Meteostation"  // Default hostname.
 #define ZABBIXPORT		10051

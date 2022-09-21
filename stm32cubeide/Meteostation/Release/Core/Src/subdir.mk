@@ -8,6 +8,7 @@ C_SRCS += \
 ../Core/Src/BME280.c \
 ../Core/Src/dhcp.c \
 ../Core/Src/main.c \
+../Core/Src/sntp.c \
 ../Core/Src/socket.c \
 ../Core/Src/ssd1306.c \
 ../Core/Src/ssd1306_fonts.c \
@@ -21,6 +22,7 @@ C_DEPS += \
 ./Core/Src/BME280.d \
 ./Core/Src/dhcp.d \
 ./Core/Src/main.d \
+./Core/Src/sntp.d \
 ./Core/Src/socket.d \
 ./Core/Src/ssd1306.d \
 ./Core/Src/ssd1306_fonts.d \
@@ -34,6 +36,7 @@ OBJS += \
 ./Core/Src/BME280.o \
 ./Core/Src/dhcp.o \
 ./Core/Src/main.o \
+./Core/Src/sntp.o \
 ./Core/Src/socket.o \
 ./Core/Src/ssd1306.o \
 ./Core/Src/ssd1306_fonts.o \
@@ -51,6 +54,8 @@ Core/Src/dhcp.o: ../Core/Src/dhcp.c Core/Src/subdir.mk
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m3 -std=gnu11 -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -Os -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/dhcp.d" -MT"$@" --specs=nano.specs -mfloat-abi=soft -mthumb -o "$@"
 Core/Src/main.o: ../Core/Src/main.c Core/Src/subdir.mk
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m3 -std=gnu11 -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -Os -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"$@" --specs=nano.specs -mfloat-abi=soft -mthumb -o "$@"
+Core/Src/sntp.o: ../Core/Src/sntp.c Core/Src/subdir.mk
+	arm-none-eabi-gcc "$<" -mcpu=cortex-m3 -std=gnu11 -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -Os -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/sntp.d" -MT"$@" --specs=nano.specs -mfloat-abi=soft -mthumb -o "$@"
 Core/Src/socket.o: ../Core/Src/socket.c Core/Src/subdir.mk
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m3 -std=gnu11 -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -Os -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/socket.d" -MT"$@" --specs=nano.specs -mfloat-abi=soft -mthumb -o "$@"
 Core/Src/ssd1306.o: ../Core/Src/ssd1306.c Core/Src/subdir.mk

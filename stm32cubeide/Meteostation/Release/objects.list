@@ -1,6 +1,7 @@
 "Core/Src/BME280.o"
 "Core/Src/dhcp.o"
 "Core/Src/main.o"
+"Core/Src/sntp.o"
 "Core/Src/socket.o"
 "Core/Src/ssd1306.o"
 "Core/Src/ssd1306_fonts.o"
