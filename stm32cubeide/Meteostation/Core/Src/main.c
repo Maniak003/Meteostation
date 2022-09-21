@@ -323,6 +323,7 @@ void init_w5500() {
     getSNfromDHCP(net_info.sn);
     getZABBIXfromDHCP(net_info.zabbix);
     getHostNamefromDHCP(net_info.hostname);
+    getTimeSrvfromDHCP(net_info.tmsrv);
     if (net_info.hostname[0] == '\0') {
     	sprintf(ZabbixHostName, "%s", ZABBIXAGHOST);
     } else {
@@ -407,7 +408,11 @@ int main(void)
   HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_SET);
   HAL_Delay(2000);
   init_w5500();
-  SNTP_init(0, ntp_server, 28, gDATABUF);
+  if (net_info.tmsrv[0] == 0) {
+	  SNTP_init(0, ntp_server, 28, gDATABUF);
+  } else {
+	  SNTP_init(0, net_info.tmsrv, 28, gDATABUF);
+  }
 #else
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET);	// Reset W5500
 #endif

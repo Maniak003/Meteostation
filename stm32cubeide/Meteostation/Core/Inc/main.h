@@ -36,7 +36,7 @@ extern "C" {
 #define BME280_ENABLE
 #define DISPLAY_1306
 #define COLUMN0 0
-#define COLUMN1 58
+#define COLUMN1 54
 #define COLUMN2 97
 #include <stdio.h>
 #include <stdlib.h>

@@ -157,6 +157,12 @@ void getSNfromDHCP(uint8_t* ip);
 void getDNSfromDHCP(uint8_t* ip);
 
 /*
+ * @brief Get Time server address
+ * @param ip  - DNS address to be returned
+ */
+void getTimeSrvfromDHCP(uint8_t* ip);
+
+/*
  * @brief Get the leased time by DHCP sever
  * @return unit 1s
  */

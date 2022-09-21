@@ -203,6 +203,7 @@ uint8_t DHCP_allocated_ip[4]  = {0, };    // IP address from DHCP
 uint8_t DHCP_allocated_gw[4]  = {0, };    // Gateway address from DHCP
 uint8_t DHCP_allocated_sn[4]  = {0, };    // Subnet mask from DHCP
 uint8_t DHCP_allocated_dns[4] = {0, };    // DNS address from DHCP
+uint8_t DHCP_allocated_time[4] = {0, };    // Time server address from DHCP
 uint8_t DHCP_allocated_zabbix[4] = {0, }; // Zabbix server option 224
 uint8_t DHCP_allocated_hostname[256] = {0, }; // Host-name option 12
 
@@ -687,6 +688,15 @@ int8_t parseDHCPMSG(void)
    				DHCP_allocated_dns[3] = *p++;
    				p = p + (opt_len - 4);
    				break;
+   			case timeServer :
+   				p++;
+   				opt_len = *p++;
+   				DHCP_allocated_time[0] = *p++;
+   				DHCP_allocated_time[1] = *p++;
+   				DHCP_allocated_time[2] = *p++;
+   				DHCP_allocated_time[3] = *p++;
+   				p = p + (opt_len - 4);
+   				break;
    			case dhcpIPaddrLeaseTime :
    				p++;
    				opt_len = *p++;
@@ -1052,6 +1062,14 @@ void getDNSfromDHCP(uint8_t* ip)
    ip[1] = DHCP_allocated_dns[1];
    ip[2] = DHCP_allocated_dns[2];
    ip[3] = DHCP_allocated_dns[3];         
+}
+
+void getTimeSrvfromDHCP(uint8_t* ip)
+{
+   ip[0] = DHCP_allocated_time[0];
+   ip[1] = DHCP_allocated_time[1];
+   ip[2] = DHCP_allocated_time[2];
+   ip[3] = DHCP_allocated_time[3];
 }
 
 uint32_t getDHCPLeasetime(void)
