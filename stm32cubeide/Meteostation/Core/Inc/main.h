@@ -78,7 +78,8 @@ extern "C" {
 #define POWER_PULSE POWER_PULSE_GPIO_Port->BSRR = (uint32_t)POWER_PULSE_Pin; POWER_PULSE_GPIO_Port->BSRR = (uint32_t)POWER_PULSE_Pin << 16u;
 #define POWER_VOLTAGE 1004
 #define TRUST_INTERVAL 900 /* 3 sigma*/
-#define GM_CPS2URh 4.8
+#define GM_CPS2URh 9.6
+#define GM_SELF_FONE 1.5	/* Собственный фон трубки */
 #define MEAS_INTERVAL 1000
 #define NTP_INTERVAL 3600000 /* 1 час */
 /* USER CODE END ET */
