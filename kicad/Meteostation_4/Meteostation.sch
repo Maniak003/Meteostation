@@ -1548,18 +1548,6 @@ $EndComp
 Wire Wire Line
 	4500 3350 4850 3350
 $Comp
-L Connector:Conn_01x01_Female J5
-U 1 1 632E013C
-P 4500 3150
-F 0 "J5" V 4650 3150 50  0001 C CNN
-F 1 "RST" V 4400 3250 50  0000 L CNN
-F 2 "My-library:SMD-CONN" H 4500 3150 50  0001 C CNN
-F 3 "~" H 4500 3150 50  0001 C CNN
-	1    4500 3150
-	0    -1   -1   0   
-$EndComp
-Connection ~ 4500 3350
-$Comp
 L Regulator_Switching:LMR14206 U2
 U 1 1 632E7201
 P 8100 4300
@@ -1893,7 +1881,7 @@ Wire Wire Line
 Wire Wire Line
 	7800 3650 7800 3700
 Connection ~ 7800 3650
-Text GLabel 7500 3400 0    50   Input ~ 0
+Text GLabel 7400 3400 0    50   Input ~ 0
 PWR
 $Comp
 L Device:C C2
@@ -2398,4 +2386,29 @@ Wire Wire Line
 	7700 5500 7700 5100
 Wire Wire Line
 	7700 5100 9550 5100
+$Comp
+L Device:R R6
+U 1 1 634FB19F
+P 7500 3550
+F 0 "R6" H 7250 3550 50  0000 R CNN
+F 1 "100k" H 7300 3450 50  0000 R CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 7430 3550 50  0001 C CNN
+F 3 "~" H 7500 3550 50  0001 C CNN
+	1    7500 3550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR043
+U 1 1 63505702
+P 7500 3700
+F 0 "#PWR043" H 7500 3450 50  0001 C CNN
+F 1 "GND" H 7505 3527 50  0001 C CNN
+F 2 "" H 7500 3700 50  0001 C CNN
+F 3 "" H 7500 3700 50  0001 C CNN
+	1    7500 3700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7400 3400 7500 3400
+Connection ~ 7500 3400
 $EndSCHEMATC
