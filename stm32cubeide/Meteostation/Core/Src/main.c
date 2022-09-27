@@ -505,7 +505,7 @@ int main(void)
 				HAL_IWDG_Refresh(&hiwdg);
 	  	  	}
 		#ifdef ZABBIX_ENABLE
-	  	/* Настройка времени через NTP */
+	  	/* Настройка времени через NTP  */
 		if ((HAL_GetTick() - ntp_interval > NTP_INTERVAL) || first_start) {
 			first_start = FALSE;
 			ntp_interval = HAL_GetTick();
