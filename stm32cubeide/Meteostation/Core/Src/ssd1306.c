@@ -156,6 +156,8 @@ void ssd1306_Init(void) {
 
     ssd1306_WriteCommand(0x8D); //--set DC-DC enable
     ssd1306_WriteCommand(0x14); //
+    ssd1306_WriteCommand(0x81); //--set Contrast
+    ssd1306_WriteCommand(0x04); //
     ssd1306_SetDisplayOn(1); //--turn on SSD1306 panel
 
     // Clear screen
