@@ -4,12 +4,12 @@
     <meta charset="utf-8">
   </head>
     <body class="logged-in env-production page-responsive page-blob" style="word-wrap: break-word;">
-      <p> Hight voltage (3kV) voltrmeter. </p>
-      <a href="https://github.com/Maniak003/HVoltmeter/wiki" rel="nofollow">
-        <img src="https://github.com/Maniak003/HV-voltmeter/blob/main/Documents/IMG_20221002_154138.jpg" alt="HVoltmeter" style="max-width: 100%;">
+      <p> Meteostation with radiation dosimeter. </p>
+      <a href="https://github.com/Maniak003/Meteostation/wiki" rel="nofollow">
+        <img src="https://github.com/Maniak003/Meteostation/blob/main/Documents/IMG_20221019_081842.jpg" alt="Meteostation" style="max-width: 100%;">
       </a>
       <a href="https://github.com/Maniak003/HVoltmeter/wiki" rel="nofollow">
-        <img src="https://github.com/Maniak003/HV-voltmeter/blob/main/Documents/hvoltmeter.png" alt="HVoltmeter" style="max-width: 100%;">
+        <img src="https://github.com/Maniak003/Meteostation/blob/main/Documents/sheet.png" alt="Meteostation" style="max-width: 100%;">
       </a>
     </body>
 </html>
