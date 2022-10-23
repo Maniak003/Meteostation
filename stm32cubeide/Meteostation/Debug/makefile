@@ -50,34 +50,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := Anemometer
+BUILD_ARTIFACT_NAME := Meteostation
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX := 
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME).$(BUILD_ARTIFACT_EXTENSION)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-Anemometer.elf \
+Meteostation.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-Anemometer.list \
+Meteostation.list \
 
 OBJCOPY_BIN += \
-Anemometer.bin \
+Meteostation.bin \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: Anemometer.elf secondary-outputs
+main-build: Meteostation.elf secondary-outputs
 
 # Tool invocations
-Anemometer.elf: $(OBJS) $(USER_OBJS) /home/ed/work/gitprojects/Anemometer/stm32cubeide/Anemometer/STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "Anemometer.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/ed/work/gitprojects/Anemometer/stm32cubeide/Anemometer/STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Anemometer.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Meteostation.elf: $(OBJS) $(USER_OBJS) /home/ed/work/gitprojects/meteostation/stm32cubeide/Meteostation/STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "Meteostation.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/ed/work/gitprojects/meteostation/stm32cubeide/Meteostation/STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Meteostation.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -86,13 +86,13 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Anemometer.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Anemometer.list"
+Meteostation.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Meteostation.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Anemometer.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Anemometer.bin"
+Meteostation.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Meteostation.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 

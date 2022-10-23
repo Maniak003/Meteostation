@@ -1,12 +1,12 @@
 #include <Ethernet.h>
-#include <Wire.h>
-#include <SPI.h>
+//#include <Wire.h>
+//#include <SPI.h>
 #include <Adafruit_BME280.h>
 
 //#define SERIAL_OUT
 #define ZABBIXPORT 10051      // Zabbix erver Port
 #define ZABBIXMAXLEN 128
-#define ZABBIXAGHOST "Meteo_3"  // Zabbix item's host name
+#define ZABBIXAGHOST "Meteo_4"  // Zabbix item's host name
 #define ZABBIXSENDPERIOD 300 // Period in secoonds
 #define wdt_on false
 #define MEASSURE_INTERVAL 10000
@@ -24,7 +24,7 @@
 #if defined(WIZ550io_WITH_MACADDRESS) // Use assigned MAC address of WIZ550io
   ;
 #else
-  byte mac[] = { 0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x45 };
+  byte mac[] = { 0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x46 };
 #endif
 #define LED A3      /* Моргалка */
 #define ETHReset 7  /* Сброс ethernet интерфейса */

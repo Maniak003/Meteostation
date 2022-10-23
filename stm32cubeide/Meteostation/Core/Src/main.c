@@ -22,7 +22,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -66,6 +65,8 @@ char text1306[16];
 uint16_t gm_counter = 0;
 uint32_t gm_interval = 0, ntp_interval = 0;
 float gm_cps = 0;
+sSensorMeasurement_t messuremetData;
+uint16_t CO2;
 
 #ifdef ZABBIX_ENABLE
 wiz_NetInfo net_info = {
@@ -348,6 +349,261 @@ void init_w5500() {
 
 }
 #endif
+
+
+bool DFRobot_SCD4X_begin(void)
+{
+  //_pWire->begin();   // Wire.h(I2C)library function initialize wire library
+
+  enablePeriodMeasure(SCD4X_STOP_PERIODIC_MEASURE);
+
+  uint16_t buf[3];
+  if( !getSerialNumber(buf) ) {
+    return false;
+  }
+
+  //DBG("begin ok!");
+  return true;
+}
+
+void setSleepMode(uint16_t mode)
+{
+  SCDwriteData(mode, NULL, 0);
+  if(SCD4X_WAKE_UP == mode)
+    HAL_Delay(20);   // Give it some time to switch mode
+}
+
+uint16_t performSelfTest(void)
+{
+  SCDwriteData(SCD4X_PERFORM_SELF_TEST, NULL, 0);
+
+  HAL_Delay(10000);
+
+  //_pWire->requestFrom(_deviceAddr, (uint8_t)3);   // Master device requests size bytes from slave device, which can be accepted by master device with read() or available()
+
+  //uint8_t count = 0;
+  uint8_t buf[3] = {0};
+/*
+  while (_pWire->available()) {
+    buf[count++] = _pWire->read();   // Use read() to receive and put into buf
+  }
+*/
+  return SCD4X_CONCAT_BYTES(buf[0], buf[1]);
+}
+
+void moduleReinit(void)
+{
+  SCDwriteData(SCD4X_REINIT, NULL, 0);
+
+  HAL_Delay(20);
+}
+
+void performFactoryReset(void)
+{
+  SCDwriteData(SCD4X_PERFORM_FACTORY_RESET, NULL, 0);
+
+  HAL_Delay(1200);
+}
+
+/********************************* Measurement Function *************************************/
+
+void measureSingleShot(uint16_t mode)
+{
+  SCDwriteData(mode, NULL, 0);
+
+  if(SCD4X_MEASURE_SINGLE_SHOT == mode) {
+	  HAL_Delay(5000);
+  } else if(SCD4X_MEASURE_SINGLE_SHOT_RHT_ONLY == mode) {
+	  HAL_Delay(50);
+  }
+}
+
+void enablePeriodMeasure(uint16_t mode)
+{
+  SCDwriteData(mode, NULL, 0);
+
+  if(SCD4X_STOP_PERIODIC_MEASURE == mode)
+	  HAL_Delay(500);   // Give it some time to switch mode
+}
+
+bool getDataReadyStatus(void)
+{
+  uint8_t buf[3] = {0};
+  SCDreadData(SCD4X_GET_DATA_READY_STATUS, buf, sizeof(buf));
+  if(0x0000 == (SCD4X_CONCAT_BYTES(buf[0], buf[1]) & 0x7FF)){
+    return false;
+  }
+  return true;
+}
+
+/*************************** compensation and calibration ********************************/
+
+void setTempComp(float tempComp)
+{
+  uint16_t data = (uint16_t)(tempComp * ((uint32_t)1 << 16) / 175);
+  uint8_t * sendPack  = pack(data);
+
+  SCDwriteData(SCD4X_SET_TEMPERATURE_OFFSET, sendPack, 3);
+
+  free(sendPack);
+}
+
+float getTempComp(void)
+{
+  uint8_t buf[3] = {0};
+  SCDreadData(SCD4X_GET_TEMPERATURE_OFFSET, buf, sizeof(buf));
+  if(buf[2] != calcCRC(SCD4X_CONCAT_BYTES(buf[0], buf[1]))) {
+    //DBG("The crc failed!");
+  }
+  return 175 * (float)( SCD4X_CONCAT_BYTES(buf[0], buf[1]) ) / ((uint32_t)1 << 16);
+}
+
+void setSensorAltitude(uint16_t altitude)
+{
+  uint8_t * sendPack = pack(altitude);
+
+  SCDwriteData(SCD4X_SET_SENSOR_ALTITUDE, sendPack, 3);
+
+  free(sendPack);
+}
+
+uint16_t getSensorAltitude(void)
+{
+  uint8_t buf[3] = {0};
+  SCDreadData(SCD4X_GET_SENSOR_ALTITUDE, buf, sizeof(buf));
+  return SCD4X_CONCAT_BYTES(buf[0], buf[1]);
+}
+
+void setAmbientPressure(uint32_t ambientPressure)
+{
+  uint16_t data = (uint16_t)(ambientPressure / 100);
+  uint8_t * sendPack = pack(data);
+
+  SCDwriteData(SCD4X_SET_AMBIENT_PRESSURE, sendPack, 3);
+
+  free(sendPack);
+}
+
+int16_t performForcedRecalibration(uint16_t CO2ppm)
+{
+  uint8_t * sendPack = pack(CO2ppm);
+
+  SCDwriteData(SCD4X_PERFORM_FORCED_RECALIB, sendPack, 3);
+
+  free(sendPack);
+
+  HAL_Delay(400);   // command execution time
+
+  uint8_t buf[3] = {0};
+  return (int16_t)(SCD4X_CONCAT_BYTES(buf[0], buf[1]) - 0x8000);
+}
+
+void setAutoCalibMode(bool mode)
+{
+  uint16_t data = 0;
+  if(mode) {
+    data = 1;
+  }
+  uint8_t * sendPack = pack(data);
+
+  SCDwriteData(SCD4X_SET_AUTOMATIC_CALIB, sendPack, 3);
+
+  free(sendPack);
+}
+
+bool getAutoCalibMode(void)
+{
+  uint8_t buf[3] = {0};
+  SCDreadData(SCD4X_GET_AUTOMATIC_CALIB, buf, sizeof(buf));
+  if(0x0000 == SCD4X_CONCAT_BYTES(buf[0], buf[1])){
+    return false;
+  }
+  return true;
+}
+
+void persistSettings(void)
+{
+  SCDwriteData(SCD4X_PERSIST_SETTINGS, NULL, 0);
+
+  HAL_Delay(800);
+}
+
+/*************************** get serial number *****************************/
+
+bool getSerialNumber(uint16_t * wordBuf)
+{
+  bool ret = true;
+  uint8_t buf[9] = {0};
+  if(sizeof(buf) != SCDreadData(SCD4X_GET_SERIAL_NUMBER, buf, sizeof(buf))) {
+    ret = false;
+  }
+  wordBuf[0] = SCD4X_CONCAT_BYTES(buf[0], buf[1]);
+  wordBuf[1] = SCD4X_CONCAT_BYTES(buf[3], buf[4]);
+  wordBuf[2] = SCD4X_CONCAT_BYTES(buf[6], buf[7]);
+  return ret;
+}
+
+/*********************** CRC Check & Sending Data Pack *************************/
+
+uint8_t calcCRC(uint16_t data)
+{
+  uint16_t current_byte;
+  uint8_t crc = SCD4X_CRC8_INIT;
+  uint8_t crc_bit;
+  uint8_t buf[2] = {(uint8_t)((data >> 8) & 0xFF), (uint8_t)(data & 0xFF)};
+
+  /* calculates 8-Bit checksum with given polynomial */
+  for (current_byte = 0; current_byte < 2; ++current_byte) {
+    crc ^= (buf[current_byte]);
+    for (crc_bit = 8; crc_bit > 0; --crc_bit) {
+      if (crc & 0x80)
+        crc = (crc << 1) ^ SCD4X_CRC8_POLYNOMIAL;
+      else
+        crc = (crc << 1);
+    }
+  }
+  return crc;
+}
+
+uint8_t * DFRobot_SCD4X_pack(uint16_t data)
+{
+  uint8_t * pBuf = (uint8_t *)malloc(sizeof(uint8_t) * 3);
+  memset(pBuf, 0, sizeof(uint8_t) * 3);
+  pBuf[0] = (uint8_t)((data >> 8) & 0xFF);
+  pBuf[1] = (uint8_t)(data & 0xFF);
+  pBuf[2] = calcCRC(data);
+
+  return pBuf;
+}
+
+/****************************** Read/Write Command Function ********************************/
+
+void SCDwriteData(uint16_t cmd, uint8_t *pBuf, size_t size)
+{
+
+  HAL_I2C_Mem_Write(&SCD4X_I2C_PORT, SCD4X_I2C_ADDR, cmd, 2, NULL, 0, 100);
+  //HAL_I2C_Master_Transmit(&SCD4X_I2C_PORT, SCD4X_I2C_ADDR, cmdBuf, 2, 100);
+  //HAL_I2C_Master_Transmit(&SCD4X_I2C_PORT, SCD4X_I2C_ADDR, pBuf, size, 100);
+}
+
+size_t SCDreadData(uint16_t cmd, uint8_t *pBuf, size_t size)
+{
+  HAL_I2C_Mem_Write(&SCD4X_I2C_PORT, SCD4X_I2C_ADDR, cmd, 2, NULL, 0, 100);
+  HAL_I2C_Master_Receive(&SCD4X_I2C_PORT, SCD4X_I2C_ADDR, pBuf, size, 100);
+
+  return size;
+}
+
+void readMeasurement(sSensorMeasurement_t * data)
+{
+  uint8_t buf[9] = {0};
+  SCDreadData(SCD4X_READ_MEASUREMENT, buf, sizeof(buf));
+
+  data->CO2ppm = SCD4X_CONCAT_BYTES(buf[0], buf[1]);
+  data->temp = -45 + 175 * (float)(SCD4X_CONCAT_BYTES(buf[3], buf[4])) / ((uint32_t)1 << 16);
+  data->humidity = 100 * (float)(SCD4X_CONCAT_BYTES(buf[6], buf[7])) / ((uint32_t)1 << 16);
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -391,11 +647,40 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
+  #ifdef DISPLAY_1306
+  ssd1306_Init();
+  ssd1306_SetCursor(0, 0);
+  ssd1306_WriteString("SCD41 init.", Font_6x8, 0x01);
+  ssd1306_UpdateScreen();
+  #endif
+
+  uint16_t serialBufer[4];
+  serialBufer[0] = 0;
+  serialBufer[1] = 0;
+  serialBufer[2] = 0;
+  serialBufer[3] = 0;
+  //LED_PULSE
+  enablePeriodMeasure(SCD4X_STOP_PERIODIC_MEASURE);  // Write: C4 0 D:3F 0 D:86 0
+  HAL_Delay(500);
+  //LED_PULSE
+  if (getSerialNumber(serialBufer)) { // Write: C4 0 D:36 0 D:82 0 Read: C5 0 D:EA 0 D:AE 0 D:FA 0 D:B7 0 D:07 0 D:29 0 D:3B 0 D:BF Write: C4 0 D:21 0 D:B1 0
+	  ;
+  }
+
+  sprintf(SndBuffer, "S0:%d S1:%d S2:%d   \r\n", serialBufer[0], serialBufer[1], serialBufer[2]);
+  HAL_UART_Transmit(&huart1, (uint8_t *) SndBuffer, sizeof(SndBuffer), 1000);
+  HAL_Delay(500);
+  enablePeriodMeasure(SCD4X_START_PERIODIC_MEASURE);
+
+  /* Read MEassurment */ // Write: C4 0 D:EC 0 D:05 0 Read: C5 0 D:03 0 D:F4 0 D:EA 0 D:69 0 D:57 0 D:FE 0 D:5B 0 D:48 0 D:F8 0
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+  //HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
 
 #ifdef DISPLAY_1306
   ssd1306_Init();
@@ -439,9 +724,22 @@ int main(void)
 /* HV setting */
   HAL_TIM_Base_Start_IT(&htim1);
   gm_interval = HAL_GetTick();
+  CO2Interval = MEAS_CO2_INTERVAL1;
 
   while (1)
   {
+	  	  	if (HAL_GetTick() - CO2Counter > CO2Interval) {
+	  	  		CO2Counter = HAL_GetTick();
+				if (messuremetData.CO2ppm > 0) {
+					CO2 = messuremetData.CO2ppm;
+					CO2Interval = MEAS_CO2_INTERVAL2;
+				} else {
+					CO2Interval = MEAS_CO2_INTERVAL1;
+				}
+				//enablePeriodMeasure(SCD4X_START_PERIODIC_MEASURE);
+				sprintf(SndBuffer, "CO2:%d H:%f T:%f   \r\n", messuremetData.CO2ppm, messuremetData.humidity, messuremetData.temp);
+				HAL_UART_Transmit(&huart1, (uint8_t *) SndBuffer, sizeof(SndBuffer), 1000);
+	  	  	}
 	  	  	if (HAL_GetTick() - fastCounter > MEAS_INTERVAL) {
 	  	  		fastCounter = HAL_GetTick();
 	  	  		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
@@ -470,7 +768,8 @@ int main(void)
 				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
 				/* CO2 */
-				sprintf(text1306, "CO2:%.0f", 2000.0);
+				readMeasurement(&messuremetData);
+				sprintf(text1306, "CO2:%d", CO2);
 				ssd1306_SetCursor(COLUMN0, 24);
 				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
@@ -664,7 +963,7 @@ static void MX_I2C2_Init(void)
 
   /* USER CODE END I2C2_Init 1 */
   hi2c2.Instance = I2C2;
-  hi2c2.Init.ClockSpeed = 100000;
+  hi2c2.Init.ClockSpeed = 40000;
   hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c2.Init.OwnAddress1 = 0;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
