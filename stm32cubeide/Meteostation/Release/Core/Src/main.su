@@ -32,7 +32,7 @@ main.c:514:6:getAutoCalibMode	16	static
 main.c:533:6:getSerialNumber	24	static
 main.c:354:6:DFRobot_SCD4X_begin	16	static
 main.c:597:6:readMeasurement	24	static
-main.c:829:6:SystemClock_Config	96	static,ignoring_inline_asm
+main.c:830:6:SystemClock_Config	96	static,ignoring_inline_asm
 main.c:613:5:main	128	static,ignoring_inline_asm
-main.c:1338:6:HAL_GPIO_EXTI_Callback	24	static
-main.c:1361:6:Error_Handler	0	static,ignoring_inline_asm
+main.c:1339:6:HAL_GPIO_EXTI_Callback	24	static
+main.c:1362:6:Error_Handler	0	static,ignoring_inline_asm

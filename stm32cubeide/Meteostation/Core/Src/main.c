@@ -730,6 +730,7 @@ int main(void)
   {
 	  	  	if (HAL_GetTick() - CO2Counter > CO2Interval) {
 	  	  		CO2Counter = HAL_GetTick();
+	  	  		readMeasurement(&messuremetData);
 				if (messuremetData.CO2ppm > 0) {
 					CO2 = messuremetData.CO2ppm;
 					CO2Interval = MEAS_CO2_INTERVAL2;
@@ -768,7 +769,7 @@ int main(void)
 				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
 				/* CO2 */
-				readMeasurement(&messuremetData);
+				//readMeasurement(&messuremetData);
 				sprintf(text1306, "CO2:%d", CO2);
 				ssd1306_SetCursor(COLUMN0, 24);
 				ssd1306_WriteString(text1306, Font_6x8, 0x01);
