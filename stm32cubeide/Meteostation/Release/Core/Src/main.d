@@ -34,7 +34,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/wizchip_conf.h ../Core/Inc/w5500.h ../Core/Inc/dhcp.h \
  ../Core/Inc/dns.h ../Core/Inc/sntp.h ../Core/Inc/socket.h \
  ../Core/Inc/BME280.h ../Core/Inc/ssd1306.h ../Core/Inc/ssd1306_conf.h \
- ../Core/Inc/ssd1306_fonts.h
+ ../Core/Inc/ssd1306_fonts.h ../Core/Inc/SCD41.h
 
 ../Core/Inc/main.h:
 
@@ -121,3 +121,5 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/ssd1306_conf.h:
 
 ../Core/Inc/ssd1306_fonts.h:
+
+../Core/Inc/SCD41.h:
