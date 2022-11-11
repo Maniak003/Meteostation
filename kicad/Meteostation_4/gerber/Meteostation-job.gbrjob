@@ -7,7 +7,7 @@
       "Application": "Pcbnew",
       "Version":     "5.1.9+dfsg1-1"
     },
-    "CreationDate":  "2022-09-13T11:04:29+03:00"
+    "CreationDate":  "2022-11-11T12:06:48+03:00"
   },
   "GeneralSpecs":
   {
@@ -19,8 +19,8 @@
     },
     "Size":
     {
-      "X": 45.050,
-      "Y": 45.050
+      "X": 44.050,
+      "Y": 44.050
     },
     "LayerNumber": 2,
     "BoardThickness":  1.600
@@ -33,8 +33,8 @@
       "PadToTrack":  0.200,
       "TrackToTrack":  0.200,
       "MinLineWidth":  0.250,
-      "TrackToRegion":  0.508,
-      "RegionToRegion":  0.508
+      "TrackToRegion":  0.200,
+      "RegionToRegion":  0.200
     }
   ],
   "FilesAttributes":
