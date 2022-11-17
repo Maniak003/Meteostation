@@ -1,0 +1,199 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L My_Library:Conn J2
+U 1 1 63763B81
+P 4450 2400
+F 0 "J2" H 4392 2215 50  0001 C CNN
+F 1 "Conn" H 4392 2306 50  0001 C CNN
+F 2 "My-library:ConnMini" H 4500 2250 50  0001 C CNN
+F 3 "~" H 4450 2400 50  0001 C CNN
+	1    4450 2400
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R3
+U 1 1 63763EE1
+P 5050 1900
+F 0 "R3" H 5120 1946 50  0000 L CNN
+F 1 "4.7k" H 5120 1855 50  0000 L CNN
+F 2 "Resistor_SMD:R_0402_1005Metric" V 4980 1900 50  0001 C CNN
+F 3 "~" H 5050 1900 50  0001 C CNN
+	1    5050 1900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C1
+U 1 1 63764131
+P 6150 2450
+F 0 "C1" H 6265 2496 50  0000 L CNN
+F 1 "10uF" H 6265 2405 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0402_1005Metric" H 6188 2300 50  0001 C CNN
+F 3 "~" H 6150 2450 50  0001 C CNN
+	1    6150 2450
+	1    0    0    -1  
+$EndComp
+$Comp
+L My_Library:VL53L0x D1
+U 1 1 63766662
+P 5600 2400
+F 0 "D1" H 5612 2865 50  0000 C CNN
+F 1 "VL53L0x" H 5600 2500 50  0000 C CNN
+F 2 "My-library:VL53L0x" H 5625 2750 50  0001 C CNN
+F 3 "" H 5625 2750 50  0001 C CNN
+	1    5600 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R2
+U 1 1 63767591
+P 4850 1900
+F 0 "R2" H 4920 1946 50  0000 L CNN
+F 1 "4.7k" H 4920 1855 50  0000 L CNN
+F 2 "Resistor_SMD:R_0402_1005Metric" V 4780 1900 50  0001 C CNN
+F 3 "~" H 4850 1900 50  0001 C CNN
+	1    4850 1900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R1
+U 1 1 6376776E
+P 4650 1900
+F 0 "R1" H 4720 1946 50  0000 L CNN
+F 1 "4.7k" H 4720 1855 50  0000 L CNN
+F 2 "Resistor_SMD:R_0402_1005Metric" V 4580 1900 50  0001 C CNN
+F 3 "~" H 4650 1900 50  0001 C CNN
+	1    4650 1900
+	1    0    0    -1  
+$EndComp
+$Comp
+L My_Library:Conn J3
+U 1 1 637687D0
+P 4450 2500
+F 0 "J3" H 4392 2315 50  0001 C CNN
+F 1 "Conn" H 4392 2406 50  0001 C CNN
+F 2 "My-library:ConnMini" H 4500 2350 50  0001 C CNN
+F 3 "~" H 4450 2500 50  0001 C CNN
+	1    4450 2500
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	6000 2100 6150 2100
+Wire Wire Line
+	6150 2100 6150 2200
+Wire Wire Line
+	5400 2900 5500 2900
+Wire Wire Line
+	6150 2900 6150 2600
+Connection ~ 5500 2900
+Wire Wire Line
+	5500 2900 5600 2900
+Connection ~ 5600 2900
+Wire Wire Line
+	5600 2900 5700 2900
+Connection ~ 5700 2900
+Wire Wire Line
+	5700 2900 5800 2900
+Connection ~ 5800 2900
+Wire Wire Line
+	5800 2900 6150 2900
+Wire Wire Line
+	6000 2200 6150 2200
+Connection ~ 6150 2200
+Wire Wire Line
+	6150 2200 6150 2300
+Wire Wire Line
+	4650 1750 4850 1750
+Wire Wire Line
+	6150 1750 6150 2100
+Connection ~ 4850 1750
+Wire Wire Line
+	4850 1750 5050 1750
+Connection ~ 5050 1750
+Wire Wire Line
+	5050 1750 6150 1750
+Connection ~ 6150 2100
+$Comp
+L My_Library:Conn J4
+U 1 1 6376C66A
+P 4450 2900
+F 0 "J4" H 4392 2715 50  0001 C CNN
+F 1 "Conn" H 4392 2806 50  0001 C CNN
+F 2 "My-library:ConnMini" H 4500 2750 50  0001 C CNN
+F 3 "~" H 4450 2900 50  0001 C CNN
+	1    4450 2900
+	-1   0    0    1   
+$EndComp
+$Comp
+L My_Library:Conn J1
+U 1 1 6376C975
+P 4450 1750
+F 0 "J1" H 4392 1565 50  0001 C CNN
+F 1 "Conn" H 4392 1656 50  0001 C CNN
+F 2 "My-library:ConnMini" H 4500 1600 50  0001 C CNN
+F 3 "~" H 4450 1750 50  0001 C CNN
+	1    4450 1750
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4550 1750 4650 1750
+Connection ~ 4650 1750
+Wire Wire Line
+	5050 2050 5050 2100
+Wire Wire Line
+	5050 2100 5200 2100
+Wire Wire Line
+	4550 2400 4850 2400
+Wire Wire Line
+	4550 2500 4650 2500
+Wire Wire Line
+	4850 2050 4850 2400
+Connection ~ 4850 2400
+Wire Wire Line
+	4850 2400 5200 2400
+Wire Wire Line
+	4650 2050 4650 2500
+Connection ~ 4650 2500
+Wire Wire Line
+	4650 2500 5200 2500
+Wire Wire Line
+	4550 2900 5400 2900
+Connection ~ 5400 2900
+NoConn ~ 5200 2200
+NoConn ~ 5200 2300
+$Comp
+L power:GND #PWR?
+U 1 1 637753B5
+P 5400 2900
+F 0 "#PWR?" H 5400 2650 50  0001 C CNN
+F 1 "GND" H 5405 2727 50  0000 C CNN
+F 2 "" H 5400 2900 50  0001 C CNN
+F 3 "" H 5400 2900 50  0001 C CNN
+	1    5400 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3.3V #PWR?
+U 1 1 6377597F
+P 5050 1750
+F 0 "#PWR?" H 5050 1600 50  0001 C CNN
+F 1 "+3.3V" H 5065 1923 50  0000 C CNN
+F 2 "" H 5050 1750 50  0001 C CNN
+F 3 "" H 5050 1750 50  0001 C CNN
+	1    5050 1750
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
