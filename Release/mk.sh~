@@ -1,0 +1,3 @@
+#!/bin/bash
+
+zip all.zip ../stm32cubeide/Meteostation/Release/Meteostation.hex ../kicad/Meteostation/gerber/anemometr.zip ../FreeCAD/base-4.stl ../FreeCAD/cover-4.stl ../FreeCAD/plate-4.stl ../FreeCAD/holder-3.stl ../kicad/Anemometr_v2/bom/ibom.html
