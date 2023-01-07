@@ -21,7 +21,7 @@ main.c:533:8:SCDreadData	40	static
 main.c:405:6:getDataReadyStatus	16	static
 main.c:484:6:getSerialNumber	24	static
 main.c:539:6:readMeasurement	24	static
-main.c:770:6:SystemClock_Config	96	static,ignoring_inline_asm
+main.c:771:6:SystemClock_Config	96	static,ignoring_inline_asm
 main.c:553:5:main	128	static,ignoring_inline_asm
-main.c:1279:6:HAL_GPIO_EXTI_Callback	24	static
-main.c:1302:6:Error_Handler	0	static,ignoring_inline_asm
+main.c:1280:6:HAL_GPIO_EXTI_Callback	24	static
+main.c:1303:6:Error_Handler	0	static,ignoring_inline_asm

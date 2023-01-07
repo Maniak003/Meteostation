@@ -1558,7 +1558,7 @@ F 3 "http://www.ti.com/lit/ds/symlink/lmr14206.pdf" H 7600 4750 50  0001 C CNN
 	1    8000 4300
 	1    0    0    -1  
 $EndComp
-Text GLabel 7350 4100 0    50   Input ~ 0
+Text GLabel 7450 4100 0    50   Input ~ 0
 12-16
 $Comp
 L Device:R R8
@@ -1618,12 +1618,12 @@ $EndComp
 $Comp
 L power:GND #PWR029
 U 1 1 63349FA6
-P 8000 4900
-F 0 "#PWR029" H 8000 4650 50  0001 C CNN
-F 1 "GND" H 8005 4727 50  0001 C CNN
-F 2 "" H 8000 4900 50  0001 C CNN
-F 3 "" H 8000 4900 50  0001 C CNN
-	1    8000 4900
+P 7500 4900
+F 0 "#PWR029" H 7500 4650 50  0001 C CNN
+F 1 "GND" H 7505 4727 50  0001 C CNN
+F 2 "" H 7500 4900 50  0001 C CNN
+F 3 "" H 7500 4900 50  0001 C CNN
+	1    7500 4900
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -1691,27 +1691,14 @@ Connection ~ 9400 4100
 $Comp
 L Device:C C1
 U 1 1 634777B2
-P 7400 4700
-F 0 "C1" H 7200 4950 50  0000 L CNN
-F 1 "10uF" H 7200 4850 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 7438 4550 50  0001 C CNN
-F 3 "~" H 7400 4700 50  0001 C CNN
-	1    7400 4700
+P 7500 4700
+F 0 "C1" H 7300 4950 50  0000 L CNN
+F 1 "10uF" H 7300 4850 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 7538 4550 50  0001 C CNN
+F 3 "~" H 7500 4700 50  0001 C CNN
+	1    7500 4700
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	7400 4100 7500 4100
-Wire Wire Line
-	7500 4300 7400 4300
-Wire Wire Line
-	7400 4300 7400 4100
-Wire Wire Line
-	7400 4300 7400 4550
-Connection ~ 7400 4300
-Wire Wire Line
-	8000 4900 7400 4900
-Wire Wire Line
-	7400 4900 7400 4850
 $Comp
 L power:GND #PWR013
 U 1 1 634E4CEA
@@ -2184,9 +2171,6 @@ Wire Wire Line
 Wire Wire Line
 	10950 3450 10950 3550
 Wire Wire Line
-	7350 4100 7400 4100
-Connection ~ 7400 4100
-Wire Wire Line
 	10900 2950 10950 2950
 Wire Wire Line
 	9050 3150 9250 3150
@@ -2464,4 +2448,17 @@ Text GLabel 4850 6450 0    50   Input ~ 0
 MOSI
 Text GLabel 4850 6550 0    50   Input ~ 0
 SCLK
+Wire Wire Line
+	7500 4550 7500 4300
+Connection ~ 7500 4300
+Wire Wire Line
+	7500 4300 7500 4100
+Wire Wire Line
+	8000 4900 7500 4900
+Wire Wire Line
+	7500 4900 7500 4850
+Connection ~ 7500 4900
+Wire Wire Line
+	7450 4100 7500 4100
+Connection ~ 7500 4100
 $EndSCHEMATC

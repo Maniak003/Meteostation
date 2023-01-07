@@ -33,7 +33,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 //#define TMP117_ENABLE
-#define BME280_ENABLE
+//#define BME280_ENABLE
 #define DISPLAY_1306
 #define COLUMN0 0
 #define COLUMN1 54
@@ -78,7 +78,8 @@ extern "C" {
 #define LED_PULSE LED_GPIO_Port->BSRR = (uint32_t)LED_Pin; LED_GPIO_Port->BSRR = (uint32_t)LED_Pin << 16u;
 #define TP_PULSE GPIOA->BSRR = (uint32_t)GPIO_PIN_15; GPIOA->BSRR = (uint32_t)GPIO_PIN_15 << 16u;
 #define POWER_PULSE POWER_PULSE_GPIO_Port->BSRR = (uint32_t)POWER_PULSE_Pin; POWER_PULSE_GPIO_Port->BSRR = (uint32_t)POWER_PULSE_Pin << 16u;
-#define POWER_VOLTAGE 1004
+#define POWER_VOLTAGE 850
+#define POWER_CONVERT 0.473f
 #define TRUST_INTERVAL 900 /* 3 sigma*/
 #define GM_CPS2URh 9.6
 #define GM_SELF_FONE 1.5	/* Собственный фон трубки */

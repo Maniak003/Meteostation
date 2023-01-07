@@ -586,7 +586,7 @@ int main(void)
   MX_RTC_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
   #ifdef DISPLAY_1306
   ssd1306_Init();
   ssd1306_SetCursor(0, 0);
@@ -666,6 +666,7 @@ int main(void)
   gm_interval = HAL_GetTick();
 
   CO2Interval = MEAS_CO2_INTERVAL1;
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   while (1)
   {
@@ -728,14 +729,14 @@ int main(void)
 				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
 				/* Высокое напряжение */
-				sprintf(text1306, "%.0fv", hvLevel * 0.398);
+				sprintf(text1306, "%.0fv", hvLevel * POWER_CONVERT);
 				ssd1306_SetCursor(COLUMN1, 24);
 				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 
 				#ifdef ZABBIX_ENABLE
 				/* Часы */
 				HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-				sprintf(text1306, "%2.0d:%.2i", sTime.Hours, sTime.Minutes);
+				sprintf(text1306, "%.2i:%.2i", sTime.Hours, sTime.Minutes);
 				ssd1306_SetCursor(COLUMN2, 0);
 				ssd1306_WriteString(text1306, Font_6x8, 0x01);
 				#endif
@@ -1111,7 +1112,7 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 20;
+  htim4.Init.Prescaler = 10;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 65535;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
