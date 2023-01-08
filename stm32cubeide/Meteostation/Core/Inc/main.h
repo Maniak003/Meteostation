@@ -33,7 +33,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 //#define TMP117_ENABLE
-//#define BME280_ENABLE
+#define BME280_ENABLE
 #define DISPLAY_1306
 #define COLUMN0 0
 #define COLUMN1 54
@@ -82,10 +82,11 @@ extern "C" {
 #define POWER_CONVERT 0.473f
 #define TRUST_INTERVAL 900 /* 3 sigma*/
 #define GM_CPS2URh 9.6
-#define GM_SELF_FONE 1.5	/* Собственный фон трубки */
+#define GM_SELF_FONE 1.2	/* Собственный фон трубки */
 #define MEAS_INTERVAL 1000
 #define MEAS_CO2_INTERVAL1 1000
 #define MEAS_CO2_INTERVAL2 5000
+#define ZABB_MEAS_INTERVAL 10000
 #define NTP_INTERVAL 3600000 /* 1 час */
 /* USER CODE END ET */
 
@@ -128,6 +129,7 @@ void Error_Handler(void);
 ADC_HandleTypeDef hadc1;
 uint32_t fastCounter, CO2Counter, CO2Interval ;
 uint16_t hvLevel;
+bool gm_ready;
 
 //uint16_t Z12, Z21, Z23, Z32, Z34, Z43, Z41, Z14;
 /*
@@ -167,10 +169,10 @@ float temperature, pressure, humidity;
 #define ZABBIXAGHOST	"Meteostation"  // Default hostname.
 #define ZABBIXPORT		10051
 #define ZABBIXMAXLEN	128
-#define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xED
+#define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xEE
 char ZabbixHostName[255];
 
-#define CO2_DEBUG
+//#define CO2_DEBUG
 
 
 /* USER CODE END Private defines */

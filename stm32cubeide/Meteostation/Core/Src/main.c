@@ -63,7 +63,7 @@ char uart_buffer[10] = {0,};
 char SndBuffer[200] = {0,};
 char text1306[16];
 uint16_t gm_counter = 0;
-uint32_t gm_interval = 0, ntp_interval = 0;
+uint32_t gm_interval = 0, ntp_interval = 0, zabb_interval = 0;
 float gm_cps = 0;
 sSensorMeasurement_t messuremetData;
 uint16_t CO2;
@@ -81,6 +81,7 @@ datetime timeNTP;
 RTC_TimeTypeDef sTime = {0};
 RTC_DateTypeDef DateToUpdate = {0};
 char trans_str[64] = {0,};
+bool gm_ready = FALSE;
 bool first_start = TRUE;
 
 /* USER CODE END PV */
@@ -610,8 +611,8 @@ int main(void)
   sprintf(SndBuffer, "S0:%d S1:%d S2:%d   \r\n", serialBufer[0], serialBufer[1], serialBufer[2]);
   HAL_UART_Transmit(&huart1, (uint8_t *) SndBuffer, sizeof(SndBuffer), 1000);
   HAL_Delay(500);
-  enablePeriodMeasure(SCD4X_START_PERIODIC_MEASURE);
   #endif
+  enablePeriodMeasure(SCD4X_START_PERIODIC_MEASURE);
 
   /* Read MEassurment */ // Write: C4 0 D:EC 0 D:05 0 Read: C5 0 D:03 0 D:F4 0 D:EA 0 D:69 0 D:57 0 D:FE 0 D:5B 0 D:48 0 D:F8 0
 
@@ -634,7 +635,7 @@ int main(void)
   HAL_GPIO_WritePin(Eth_rst_GPIO_Port, Eth_rst_Pin, GPIO_PIN_RESET);	// Reset W5500
   HAL_GPIO_WritePin(Eth_rst_GPIO_Port, Eth_rst_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_SET);
-  HAL_Delay(2000);
+  HAL_Delay(3000);
   init_w5500();
   if (net_info.tmsrv[0] == 0) {
 	  SNTP_init(0, ntp_server, 28, gDATABUF);
@@ -679,6 +680,11 @@ int main(void)
 				} else {
 					CO2Interval = MEAS_CO2_INTERVAL1;
 				}
+				#ifdef ZABBIX_ENABLE
+				if (CO2 > 300) {
+					sendToZabbix(net_info.zabbix, ZabbixHostName, "CO2", CO2);
+				}
+				#endif
 				#ifdef CO2_DEBUG
 				sprintf(SndBuffer, "CO2:%d H:%f T:%f   \r\n", messuremetData.CO2ppm, messuremetData.humidity, messuremetData.temp);
 				HAL_UART_Transmit(&huart1, (uint8_t *) SndBuffer, sizeof(SndBuffer), 1000);
@@ -755,6 +761,28 @@ int main(void)
 			sTime.Minutes = timeNTP.mm;
 			sTime.Seconds = timeNTP.ss;
 			HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+		}
+		#if defined(TMP117_ENABLE) || defined(BME280_ENABLE)
+		if (HAL_GetTick() - zabb_interval > ZABB_MEAS_INTERVAL) {
+			zabb_interval = HAL_GetTick();
+		  if ((temperature < 60.0) && (temperature > -40.0)) {
+			  sendToZabbix(net_info.zabbix, ZabbixHostName, "TEMPERATURE", temperature);
+			#ifdef BME280_ENABLE
+			  sendToZabbix(net_info.zabbix, ZabbixHostName, "PRESSURE", pressure);
+			  sendToZabbix(net_info.zabbix, ZabbixHostName, "HUMIDITY", humidity);
+			#endif
+		  } else {
+			#ifdef BME280_ENABLE
+			HAL_I2C_DeInit(&hi2c1);
+			MX_I2C1_Init();
+			BME280_Init();  // Сбой датчика bme280, пробуем исправить.
+			#endif
+		  }
+		}
+		#endif
+		if (gm_ready) {
+			gm_ready = FALSE;
+			sendToZabbix(net_info.zabbix, ZabbixHostName, "GM_CPS", gm_cps);
 		}
 		#endif
     /* USER CODE END WHILE */
@@ -1284,6 +1312,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	   gm_counter++;
 	   if (gm_counter >= TRUST_INTERVAL) {
 		   gm_cps = (float) (gm_counter / (float) ((HAL_GetTick() - gm_interval) / 1000)) - GM_SELF_FONE;
+		   gm_ready = TRUE;
 		   if (gm_cps < 0) {
 			   gm_cps = 0;
 		   }
