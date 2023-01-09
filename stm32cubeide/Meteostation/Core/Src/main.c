@@ -121,11 +121,11 @@ void UART_Printf(const char* fmt, ...) {
 
 
 void W5500_Select(void) {
-	HAL_GPIO_WritePin(GPIOB, W5500_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_RESET);
 }
 
 void W5500_Unselect(void) {
-	HAL_GPIO_WritePin(GPIOB, W5500_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_SET);
 }
 
 void W5500_ReadBuff(uint8_t* buff, uint16_t len) {
@@ -352,17 +352,8 @@ void init_w5500() {
 #endif
 
 /*
-
-bool DFRobot_SCD4X_begin(void) {
-  enablePeriodMeasure(SCD4X_STOP_PERIODIC_MEASURE);
-  uint16_t buf[3];
-  if( !getSerialNumber(buf) ) {
-    return false;
-  }
-  return true;
-}
-*/
-
+ * Function for control SCD41
+ */
 void setSleepMode(uint16_t mode) {
   SCDwriteData(mode, NULL, 0);
   if(SCD4X_WAKE_UP == mode)
@@ -386,7 +377,9 @@ void performFactoryReset(void) {
   HAL_Delay(1200);
 }
 
-/********************************* Measurement Function *************************************/
+/*
+ * Measurement Function for SCD41
+ */
 
 void measureSingleShot(uint16_t mode) {
   SCDwriteData(mode, NULL, 0);
@@ -643,23 +636,18 @@ int main(void)
 	  SNTP_init(0, net_info.tmsrv, 28, gDATABUF);
   }
 #else
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET);	// Reset W5500
+  HAL_GPIO_WritePin(Eth_rst_GPIO_Port, Eth_rst_Pin, GPIO_PIN_RESET);	// Reset W5500
+  HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_RESET);
 #endif
 
-#ifdef DISPLAY_1306
-  ssd1306_SetCursor(0, 9);
-  ssd1306_WriteString("BME280 init.", Font_6x8, 0x01);
-  ssd1306_UpdateScreen();
-#endif
 
 #ifdef BME280_ENABLE
+	#ifdef DISPLAY_1306
+	  ssd1306_SetCursor(0, 9);
+	  ssd1306_WriteString("BME280 init.", Font_6x8, 0x01);
+	  ssd1306_UpdateScreen();
+	#endif
   BME280_Init();
-#endif
-
-#ifdef DISPLAY_1306
-  ssd1306_SetCursor(0, 18);
-  ssd1306_WriteString("Finish.", Font_6x8, 0x01);
-  ssd1306_UpdateScreen();
 #endif
 
   /* HV setting */
@@ -1140,7 +1128,7 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 10;
+  htim4.Init.Prescaler = 20;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 65535;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
