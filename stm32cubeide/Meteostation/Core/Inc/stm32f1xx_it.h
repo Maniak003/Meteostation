@@ -38,6 +38,8 @@
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+ extern ADC_HandleTypeDef hadc1;
+ extern uint16_t hvLevel;
 
 /* USER CODE END EC */
 

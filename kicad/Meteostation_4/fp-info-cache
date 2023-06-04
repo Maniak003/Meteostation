@@ -1,4 +1,4 @@
-27858293310000
+27652619873000
 My-library
 B82801A1
 
@@ -7,33 +7,19 @@ B82801A1
 4
 4
 My-library
-BZ5020
+Buzzer-5020
 
 
 0
 3
 2
 My-library
-BuzerSMD
+CON4
 
 
 0
-2
-2
-My-library
-BuzerSMDsmall
-
-
-0
-2
-2
-My-library
-ConnMini
-
-
-0
-1
-1
+4
+4
 My-library
 DA2257
 
@@ -42,12 +28,19 @@ DA2257
 10
 10
 My-library
-FJ60035
+DC12-DC5
 
 
 0
-36
-36
+6
+6
+My-library
+FC-60035
+
+
+0
+5
+5
 My-library
 H1102N
 
@@ -56,20 +49,6 @@ H1102N
 16
 16
 My-library
-HY931147C
-
-
-0
-16
-16
-My-library
-JDY-10
-
-
-0
-22
-22
-My-library
 MySwithc
 
 
@@ -77,19 +56,12 @@ MySwithc
 3
 3
 My-library
-OLED049
+OLED128x64
 
 
 0
-14
-14
-My-library
-SCD41
-
-
-0
-24
-21
+4
+4
 My-library
 SMD-CONN
 
@@ -98,19 +70,47 @@ SMD-CONN
 1
 1
 My-library
-TMP117
+SW_Power
+http://www.ckswitches.com/media/1422/js.pdf
+switch spdt
+0
+3
+3
+My-library
+Si3402-QFN20-6x4
+
+
+0
+21
+21
+My-library
+TEMD5080
+
+
+0
+2
+2
+My-library
+TR9400
 
 
 0
 7
 7
 My-library
-VL53L0x
+connBig
 
 
 0
-12
-12
+1
+1
+My-library
+mini_conn
+
+
+0
+1
+1
 My-library
 trans-gantel
 

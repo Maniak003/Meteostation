@@ -1,5 +1,5 @@
 #include "BME280.h"
-#include "main.h"
+//#include "main.h"
 //------------------------------------------------
 extern I2C_HandleTypeDef hi2c1;
 extern char str1[100];

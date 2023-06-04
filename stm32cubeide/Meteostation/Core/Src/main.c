@@ -26,6 +26,15 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+#ifndef PUBLIC_VAR
+#define PUBLIC_VAR
+
+uint32_t fastCounter, CO2Counter, CO2Interval ;
+uint16_t hvLevel;
+bool gm_ready;
+float temperature, pressure, humidity;
+char ZabbixHostName[255];
+#endif
 
 /* USER CODE END PTD */
 
@@ -43,7 +52,6 @@ ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c1;
-I2C_HandleTypeDef hi2c2;
 
 IWDG_HandleTypeDef hiwdg;
 
@@ -55,7 +63,6 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart1;
-UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 HAL_StatusTypeDef	flash_ok;
@@ -73,7 +80,7 @@ wiz_NetInfo net_info = {
 	.mac  = { MAC_ADDRESS },
 	.dhcp = NETINFO_DHCP
 };
-uint8_t ntp_server[4] = {192, 168, 1, 6};
+uint8_t ntp_server[4] = {192, 168, 1, 1};
 uint8_t gDATABUF[DATA_BUF_SIZE];
 datetime timeNTP;
 #endif
@@ -94,8 +101,6 @@ static void MX_USART1_UART_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_IWDG_Init(void);
-static void MX_I2C2_Init(void);
-static void MX_USART2_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_RTC_Init(void);
@@ -280,25 +285,25 @@ uint8_t sendToZabbix(uint8_t * addr, char * host, char * key, float value) {
 void init_w5500() {
 	#ifdef ZABBIX_DEBUG
     UART_Printf("\r\ninit() called!\r\n");
-    UART_Printf("Registering W5500 callbacks...\r\n");
+    UART_Printf("W5500 callbacks...\r\n");
 	#endif
     reg_wizchip_cs_cbfunc(W5500_Select, W5500_Unselect);
     reg_wizchip_spi_cbfunc(W5500_ReadByte, W5500_WriteByte);
     reg_wizchip_spiburst_cbfunc(W5500_ReadBuff, W5500_WriteBuff);
 	#ifdef ZABBIX_DEBUG
-    UART_Printf("Calling wizchip_init()...\r\n");
+    UART_Printf("wizchip_init()...\r\n");
 	#endif
     uint8_t rx_tx_buff_sizes[] = {2, 2, 2, 2, 2, 2, 2, 2};
     wizchip_init(rx_tx_buff_sizes, rx_tx_buff_sizes);
 	#ifdef ZABBIX_DEBUG
-    UART_Printf("Calling DHCP_init()...\r\n");
+    UART_Printf("DHCP_init()...\r\n");
 	#endif
 
     // set MAC address before using DHCP
     setSHAR(net_info.mac);
     DHCP_init(DHCP_SOCKET, dhcp_buffer);
 	#ifdef ZABBIX_DEBUG
-    UART_Printf("Registering DHCP callbacks...\r\n");
+    UART_Printf("DHCP callbacks...\r\n");
 	#endif
     reg_dhcp_cbfunc(
         Callback_IPAssigned,
@@ -306,14 +311,14 @@ void init_w5500() {
         Callback_IPConflict
     );
 	#ifdef ZABBIX_DEBUG
-    UART_Printf("Calling DHCP_run()...\r\n");
+    UART_Printf("DHCP_run()...\r\n");
 	#endif
     // actually should be called in a loop, e.g. by timer
     uint32_t ctr = 10000;
     while((!ip_assigned) && (ctr > 0)) {
         DHCP_run();
         ctr--;
-        HAL_Delay(100);
+        HAL_Delay(300);
     }
     if(!ip_assigned) {
 		#ifdef ZABBIX_DEBUG
@@ -563,7 +568,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  ST7735_Unselect();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -573,18 +578,21 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI2_Init();
   MX_IWDG_Init();
-  MX_I2C2_Init();
-  MX_USART2_UART_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
   MX_RTC_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+  #ifdef DISPLAY_ST7735S
+  ST7735_Init();
+  ST7735_FillScreen(ST7735_BLACK);
+  ST7735_WriteString(0, 0, "SCD41 init  ", Font_7x10, ST7735_WHITE, ST7735_BLACK);
+  #endif
   #ifdef DISPLAY_1306
   ssd1306_Init();
   ssd1306_SetCursor(0, 0);
-  ssd1306_WriteString("SCD41 init.", Font_6x8, 0x01);
+  ssd1306_WriteString("SCD41 init  ", Font_6x8, 0x01);
   ssd1306_UpdateScreen();
   #endif
 
@@ -597,7 +605,23 @@ int main(void)
   HAL_Delay(500);
   //LED_PULSE
   if (getSerialNumber(serialBufer)) { // Write: C4 0 D:36 0 D:82 0 Read: C5 0 D:EA 0 D:AE 0 D:FA 0 D:B7 0 D:07 0 D:29 0 D:3B 0 D:BF Write: C4 0 D:21 0 D:B1 0
-	  ;
+	#ifdef DISPLAY_ST7735S
+	ST7735_WriteString(96, 0, "Ok", Font_7x10, ST7735_GREEN, ST7735_BLACK);
+	#endif
+	#ifdef  DISPLAY_1306
+	  ssd1306_WriteString("Ok", Font_6x8, 0x01);
+	  ssd1306_UpdateScreen();
+	  HAL_Delay(300);
+	#endif
+  } else {
+	#ifdef DISPLAY_ST7735S
+	ST7735_WriteString(96, 0, "Fail", Font_7x10, ST7735_RED, ST7735_BLACK);
+	#endif
+	#ifdef  DISPLAY_1306
+	  ssd1306_WriteString("Failed.", Font_6x8, 0x01);
+	  ssd1306_UpdateScreen();
+	  HAL_Delay(300);
+	#endif
   }
 
   #ifdef CO2_DEBUG
@@ -606,6 +630,25 @@ int main(void)
   HAL_Delay(500);
   #endif
   enablePeriodMeasure(SCD4X_START_PERIODIC_MEASURE);
+
+#ifdef BME280_ENABLE
+	#ifdef DISPLAY_ST7735S
+	ST7735_WriteString(0, 11, "BME280 init ", Font_7x10, ST7735_WHITE, ST7735_BLACK);
+	#endif
+	#ifdef DISPLAY_1306
+	  ssd1306_SetCursor(0, 9);
+	  ssd1306_WriteString("BME280 init ", Font_6x8, 0x01);
+	  ssd1306_UpdateScreen();
+	#endif
+  BME280_Init();
+	#ifdef DISPLAY_ST7735S
+	ST7735_WriteString(96, 11, "Ok", Font_7x10, ST7735_GREEN, ST7735_BLACK);
+	#endif
+	#ifdef DISPLAY_1306
+	ssd1306_WriteString("Ok", Font_6x8, 0x01);
+	ssd1306_UpdateScreen();
+	#endif
+#endif
 
   /* Read MEassurment */ // Write: C4 0 D:EC 0 D:05 0 Read: C5 0 D:03 0 D:F4 0 D:EA 0 D:69 0 D:57 0 D:FE 0 D:5B 0 D:48 0 D:F8 0
 
@@ -617,17 +660,20 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   //HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
 
-#ifdef DISPLAY_1306
-  ssd1306_Init();
-  ssd1306_SetCursor(0, 0);
-  ssd1306_WriteString("Eth init.", Font_6x8, 0x01);
-  ssd1306_UpdateScreen();
-#endif
 
   #ifdef ZABBIX_ENABLE
+	#ifdef DISPLAY_ST7735S
+	ST7735_WriteString(0, 22, "Eth init", Font_7x10, ST7735_WHITE, ST7735_BLACK);
+	#endif
+	#ifdef DISPLAY_1306
+	//ssd1306_Init();
+	ssd1306_SetCursor(0, 18);
+	ssd1306_WriteString("Eth init    ", Font_6x8, 0x01);
+	ssd1306_UpdateScreen();
+	#endif
   HAL_GPIO_WritePin(Eth_rst_GPIO_Port, Eth_rst_Pin, GPIO_PIN_RESET);	// Reset W5500
   HAL_GPIO_WritePin(Eth_rst_GPIO_Port, Eth_rst_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_RESET);
   HAL_Delay(3000);
   init_w5500();
   if (net_info.tmsrv[0] == 0) {
@@ -637,18 +683,9 @@ int main(void)
   }
 #else
   HAL_GPIO_WritePin(Eth_rst_GPIO_Port, Eth_rst_Pin, GPIO_PIN_RESET);	// Reset W5500
-  HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_SET);
 #endif
 
-
-#ifdef BME280_ENABLE
-	#ifdef DISPLAY_1306
-	  ssd1306_SetCursor(0, 9);
-	  ssd1306_WriteString("BME280 init.", Font_6x8, 0x01);
-	  ssd1306_UpdateScreen();
-	#endif
-  BME280_Init();
-#endif
 
   /* HV setting */
   HAL_TIM_Base_Start_IT(&htim1);
@@ -686,6 +723,51 @@ int main(void)
 	  	  		pressure = BME280_ReadPressure() * 0.00750063755419211f; //0.00750063755419211
 	  	  		humidity = BME280_ReadHumidity();
 				#endif
+
+				#ifdef DISPLAY_ST7735S
+				ST7735_FillScreen(ST7735_BLACK);
+				sprintf(text1306, "Temperature:%.1f", temperature);
+				ST7735_WriteString(0, 0, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+
+				/* Давление */
+				sprintf(text1306, "Pressure:%.0f", pressure);
+				ST7735_WriteString(0, 11, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+
+				/* Влажность */
+				sprintf(text1306, "Hummidity:%.1f", humidity);
+				ST7735_WriteString(0, 22, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+
+				/* CO2 */
+				sprintf(text1306, "CO2:%d ppm", CO2);
+				if (CO2 < CO2_NOMINAL) {
+					ST7735_WriteString(0, 33, text1306, Font_7x10, ST7735_GREEN, ST7735_BLACK);
+				} else if (CO2 < CO2_MAXIMUM) {
+					ST7735_WriteString(0, 33, text1306, Font_7x10, ST7735_YELLOW, ST7735_BLACK);
+				} else {
+					ST7735_WriteString(0, 33, text1306, Font_7x10, ST7735_RED, ST7735_BLACK);
+				}
+
+				/* Дозиметр */
+				sprintf(text1306, "C:%d", gm_counter);
+				ST7735_WriteString(0, 44, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+
+				sprintf(text1306, "%.2fcps", gm_cps);
+				ST7735_WriteString(0, 55, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+
+				sprintf(text1306, "%.1fuRh", gm_cps * GM_CPS2URh);
+				ST7735_WriteString(0, 66, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+
+				/* Высокое напряжение */
+				sprintf(text1306, "%.0fv", hvLevel * POWER_CONVERT);
+				ST7735_WriteString(0, 77, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+				#ifdef ZABBIX_ENABLE
+				/* Часы */
+				HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+				sprintf(text1306, "%.2i:%.2i", sTime.Hours, sTime.Minutes);
+				ST7735_WriteString(24, 88, text1306, Font_16x26, ST7735_BLUE, ST7735_BLACK);
+				#endif
+				#endif
+
 
 				#ifdef DISPLAY_1306
 				ssd1306_Fill(0);
@@ -902,40 +984,6 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
-
-}
-
-/**
-  * @brief I2C2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_I2C2_Init(void)
-{
-
-  /* USER CODE BEGIN I2C2_Init 0 */
-
-  /* USER CODE END I2C2_Init 0 */
-
-  /* USER CODE BEGIN I2C2_Init 1 */
-
-  /* USER CODE END I2C2_Init 1 */
-  hi2c2.Instance = I2C2;
-  hi2c2.Init.ClockSpeed = 40000;
-  hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c2.Init.OwnAddress1 = 0;
-  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c2.Init.OwnAddress2 = 0;
-  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN I2C2_Init 2 */
-
-  /* USER CODE END I2C2_Init 2 */
 
 }
 
@@ -1192,39 +1240,6 @@ static void MX_USART1_UART_Init(void)
 }
 
 /**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 9600;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
-
-}
-
-/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -1254,16 +1269,24 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, ST7735S_RESET_Pin|Eth_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, Eth_rst_Pin|LED_Pin|POWER_PULSE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, Eth_rst_Pin|ST7735S_CS_Pin|ST7735S_DC_Pin|LED_Pin
+                          |POWER_PULSE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PULSE_GM_Pin */
   GPIO_InitStruct.Pin = PULSE_GM_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(PULSE_GM_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : ST7735S_RESET_Pin */
+  GPIO_InitStruct.Pin = ST7735S_RESET_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(ST7735S_RESET_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : Eth_CS_Pin */
   GPIO_InitStruct.Pin = Eth_CS_Pin;
@@ -1272,8 +1295,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(Eth_CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Eth_rst_Pin POWER_PULSE_Pin */
-  GPIO_InitStruct.Pin = Eth_rst_Pin|POWER_PULSE_Pin;
+  /*Configure GPIO pins : Eth_rst_Pin ST7735S_CS_Pin ST7735S_DC_Pin POWER_PULSE_Pin */
+  GPIO_InitStruct.Pin = Eth_rst_Pin|ST7735S_CS_Pin|ST7735S_DC_Pin|POWER_PULSE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

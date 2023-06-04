@@ -34,7 +34,8 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 //#define TMP117_ENABLE
 #define BME280_ENABLE
-#define DISPLAY_1306
+//#define DISPLAY_1306
+#define DISPLAY_ST7735S
 #define COLUMN0 0
 #define COLUMN1 54
 #define COLUMN2 97
@@ -54,6 +55,11 @@ extern "C" {
 #endif
 #ifdef BME280_ENABLE
 #include "BME280.h"
+#endif
+#ifdef DISPLAY_ST7735S
+#include "st7735.h"
+#include "GFX_FUNCTIONS.h"
+#include <ST7735_fonts.h>
 #endif
 #ifdef DISPLAY_1306
 #include "ssd1306.h"
@@ -80,14 +86,16 @@ extern "C" {
 #define POWER_PULSE POWER_PULSE_GPIO_Port->BSRR = (uint32_t)POWER_PULSE_Pin; POWER_PULSE_GPIO_Port->BSRR = (uint32_t)POWER_PULSE_Pin << 16u;
 #define POWER_VOLTAGE 850
 #define POWER_CONVERT 0.473f
-#define TRUST_INTERVAL 900 /* 3 sigma*/
+#define TRUST_INTERVAL 900 /* 3 sigma - 10%*/
 #define GM_CPS2URh 9.6
-#define GM_SELF_FONE 1.2	/* Собственный фон трубки */
+#define GM_SELF_FONE 0.5	/* Собственный фон трубки */
 #define MEAS_INTERVAL 1000
 #define MEAS_CO2_INTERVAL1 1000
 #define MEAS_CO2_INTERVAL2 5000
 #define ZABB_MEAS_INTERVAL 10000
 #define NTP_INTERVAL 3600000 /* 1 час */
+#define CO2_NOMINAL 800.0f
+#define CO2_MAXIMUM 1000.0f
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -113,10 +121,16 @@ void Error_Handler(void);
 #define PULSE_GM_Pin GPIO_PIN_6
 #define PULSE_GM_GPIO_Port GPIOA
 #define PULSE_GM_EXTI_IRQn EXTI9_5_IRQn
+#define ST7735S_RESET_Pin GPIO_PIN_11
+#define ST7735S_RESET_GPIO_Port GPIOB
 #define Eth_CS_Pin GPIO_PIN_12
 #define Eth_CS_GPIO_Port GPIOB
 #define Eth_rst_Pin GPIO_PIN_8
 #define Eth_rst_GPIO_Port GPIOA
+#define ST7735S_CS_Pin GPIO_PIN_9
+#define ST7735S_CS_GPIO_Port GPIOA
+#define ST7735S_DC_Pin GPIO_PIN_10
+#define ST7735S_DC_GPIO_Port GPIOA
 #define LED_Pin GPIO_PIN_12
 #define LED_GPIO_Port GPIOA
 #define POWER_PULSE_Pin GPIO_PIN_15
@@ -126,10 +140,6 @@ void Error_Handler(void);
 #define BME280_SDA_Pin GPIO_PIN_9
 #define BME280_SDA_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
-ADC_HandleTypeDef hadc1;
-uint32_t fastCounter, CO2Counter, CO2Interval ;
-uint16_t hvLevel;
-bool gm_ready;
 
 //uint16_t Z12, Z21, Z23, Z32, Z34, Z43, Z41, Z14;
 /*
@@ -153,7 +163,6 @@ union {
 #define INIT_FINISH_TEXT "Init finish.\r\n"
 #define RESTART_TOUT "\r\nTime out, restart.\r\n"
 #define START_TEXT "\r\nMeteostation start.\r\n"
-float temperature, pressure, humidity;
 
 /* For W5500*/
 #define DHCP_SOCKET     0
@@ -164,11 +173,10 @@ float temperature, pressure, humidity;
 //#define ZABBIX_DEBUG
 #define DATA_BUF_SIZE   1024
 #define ZABBIX_ENABLE
-#define ZABBIXAGHOST	"Meteostation"  // Default hostname.
+#define ZABBIXAGHOST	"Meteo"  // Default hostname.
 #define ZABBIXPORT		10051
 #define ZABBIXMAXLEN	128
-#define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xEE
-char ZabbixHostName[255];
+#define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xef
 
 //#define CO2_DEBUG
 

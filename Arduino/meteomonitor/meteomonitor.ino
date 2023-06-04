@@ -29,7 +29,7 @@
 #define LED A3      /* Моргалка */
 #define ETHReset 7  /* Сброс ethernet интерфейса */
 
-#define OLED
+//#define OLED
 #ifdef OLED
 //#define USE_MICRO_WIRE
 #include <GyverOLED.h>

@@ -115,8 +115,8 @@ $Comp
 L Device:R R4
 U 1 1 61E82A7E
 P 6500 5650
-F 0 "R4" V 6300 5700 50  0000 R CNN
-F 1 "1k" V 6400 5700 50  0000 R CNN
+F 0 "R4" V 6400 6000 50  0000 R CNN
+F 1 "4.7k" V 6500 6000 50  0000 R CNN
 F 2 "Resistor_SMD:R_0402_1005Metric" V 6430 5650 50  0001 C CNN
 F 3 "~" H 6500 5650 50  0001 C CNN
 	1    6500 5650
@@ -2027,10 +2027,8 @@ NoConn ~ 4850 4650
 NoConn ~ 4850 4750
 NoConn ~ 4850 4950
 NoConn ~ 6150 5150
-NoConn ~ 6150 5450
 NoConn ~ 6150 5550
 NoConn ~ 4850 5450
-NoConn ~ 4850 5550
 $Comp
 L Device:C C22
 U 1 1 63CE4CE0
@@ -2379,21 +2377,10 @@ L Connector:Conn_01x01_Female J14
 U 1 1 6380E229
 P 6350 5350
 F 0 "J14" H 6600 5350 50  0001 C CNN
-F 1 "DISP_CS" H 6350 5350 50  0000 L CNN
-F 2 "My-library:ConnMini" H 6350 5350 50  0001 C CNN
+F 1 "ST7735S_CS" H 6350 5350 50  0000 L CNN
+F 2 "My-library:mini_conn" H 6350 5350 50  0001 C CNN
 F 3 "~" H 6350 5350 50  0001 C CNN
 	1    6350 5350
-	1    0    0    -1  
-$EndComp
-$Comp
-L Connector:Conn_01x01_Female J5
-U 1 1 638107F7
-P 5050 6350
-F 0 "J5" H 5300 6350 50  0001 C CNN
-F 1 "miso" H 5050 6350 50  0001 L CNN
-F 2 "My-library:ConnMini" H 5050 6350 50  0001 C CNN
-F 3 "~" H 5050 6350 50  0001 C CNN
-	1    5050 6350
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -2418,8 +2405,6 @@ F 3 "~" H 5050 6550 50  0001 C CNN
 	1    5050 6550
 	1    0    0    -1  
 $EndComp
-Text GLabel 4850 6350 0    50   Input ~ 0
-MISO
 Text GLabel 4850 6450 0    50   Input ~ 0
 MOSI
 Text GLabel 4850 6550 0    50   Input ~ 0
@@ -2438,7 +2423,7 @@ Wire Wire Line
 	7450 4100 7500 4100
 Connection ~ 7500 4100
 $Comp
-L My_Library:SCD41 D15
+L Meteostation-rescue:SCD41-My_Library D15
 U 1 1 63BEA614
 P 10250 4300
 F 0 "D15" H 10450 4350 50  0000 R CNN
@@ -2560,4 +2545,30 @@ Wire Wire Line
 Wire Wire Line
 	4350 5600 4250 5600
 Connection ~ 4350 5500
+$Comp
+L Connector:Conn_01x01_Female J17
+U 1 1 647DE59A
+P 6350 5450
+F 0 "J17" H 6600 5450 50  0001 C CNN
+F 1 "ST7735S_DC" H 6350 5450 50  0000 L CNN
+F 2 "My-library:mini_conn" H 6350 5450 50  0001 C CNN
+F 3 "~" H 6350 5450 50  0001 C CNN
+	1    6350 5450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_01x01_Female J18
+U 1 1 647E2272
+P 4650 5550
+F 0 "J18" H 4900 5550 50  0001 C CNN
+F 1 "ST7735S_RESET" H 4700 5700 50  0000 L CNN
+F 2 "My-library:mini_conn" H 4650 5550 50  0001 C CNN
+F 3 "~" H 4650 5550 50  0001 C CNN
+	1    4650 5550
+	-1   0    0    1   
+$EndComp
+Text Label 4850 6450 0    50   ~ 0
+ST7735_SDA
+Text Label 4850 6550 0    50   ~ 0
+ST7735_SCK
 $EndSCHEMATC
