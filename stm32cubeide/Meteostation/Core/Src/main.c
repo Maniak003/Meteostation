@@ -661,7 +661,6 @@ int main(void)
   //HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
 
 
-  #ifdef ZABBIX_ENABLE
 	#ifdef DISPLAY_ST7735S
 	ST7735_WriteString(0, 22, "Eth init", Font_7x10, ST7735_WHITE, ST7735_BLACK);
 	#endif
@@ -671,6 +670,7 @@ int main(void)
 	ssd1306_WriteString("Eth init    ", Font_6x8, 0x01);
 	ssd1306_UpdateScreen();
 	#endif
+#ifdef ZABBIX_ENABLE
   HAL_GPIO_WritePin(Eth_rst_GPIO_Port, Eth_rst_Pin, GPIO_PIN_RESET);	// Reset W5500
   HAL_GPIO_WritePin(Eth_rst_GPIO_Port, Eth_rst_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(Eth_CS_GPIO_Port, Eth_CS_Pin, GPIO_PIN_RESET);
