@@ -693,6 +693,9 @@ int main(void)
 
   CO2Interval = MEAS_CO2_INTERVAL1;
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+  #ifdef DISPLAY_ST7735S
+  ST7735_FillScreen(ST7735_BLACK);
+  #endif
 
   while (1)
   {
@@ -725,41 +728,41 @@ int main(void)
 				#endif
 
 				#ifdef DISPLAY_ST7735S
-				ST7735_FillScreen(ST7735_BLACK);
-				sprintf(text1306, "Temperature:%.1f", temperature);
+				//ST7735_FillScreen(ST7735_BLACK);
+				sprintf(text1306, "Temp:%.0f ", temperature);
 				ST7735_WriteString(0, 0, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
 
 				/* Давление */
-				sprintf(text1306, "Pressure:%.0f", pressure);
-				ST7735_WriteString(0, 11, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+				sprintf(text1306, "Pres:%.0f  ", pressure);
+				ST7735_WriteString(60, 0, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
 
 				/* Влажность */
-				sprintf(text1306, "Hummidity:%.1f", humidity);
-				ST7735_WriteString(0, 22, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+				sprintf(text1306, "Hum:%.0f ", humidity);
+				ST7735_WriteString(0, 11, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
 
 				/* CO2 */
-				sprintf(text1306, "CO2:%d ppm", CO2);
+				sprintf(text1306, "CO2:%d  ", CO2);
 				if (CO2 < CO2_NOMINAL) {
-					ST7735_WriteString(0, 33, text1306, Font_7x10, ST7735_GREEN, ST7735_BLACK);
+					ST7735_WriteString(60, 11, text1306, Font_7x10, ST7735_GREEN, ST7735_BLACK);
 				} else if (CO2 < CO2_MAXIMUM) {
-					ST7735_WriteString(0, 33, text1306, Font_7x10, ST7735_YELLOW, ST7735_BLACK);
+					ST7735_WriteString(60, 11, text1306, Font_7x10, ST7735_YELLOW, ST7735_BLACK);
 				} else {
-					ST7735_WriteString(0, 33, text1306, Font_7x10, ST7735_RED, ST7735_BLACK);
+					ST7735_WriteString(60, 11, text1306, Font_7x10, ST7735_RED, ST7735_BLACK);
 				}
 
 				/* Дозиметр */
-				sprintf(text1306, "C:%d", gm_counter);
-				ST7735_WriteString(0, 44, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+				sprintf(text1306, "C:%d  ", gm_counter);
+				ST7735_WriteString(0, 22, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
 
-				sprintf(text1306, "%.2fcps", gm_cps);
-				ST7735_WriteString(0, 55, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+				sprintf(text1306, "%.2fcps   ", gm_cps);
+				ST7735_WriteString(60, 22, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
 
-				sprintf(text1306, "%.1fuRh", gm_cps * GM_CPS2URh);
-				ST7735_WriteString(0, 66, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+				sprintf(text1306, "%.1fuRh ", gm_cps * GM_CPS2URh);
+				ST7735_WriteString(0, 33, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
 
 				/* Высокое напряжение */
-				sprintf(text1306, "%.0fv", hvLevel * POWER_CONVERT);
-				ST7735_WriteString(0, 77, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
+				sprintf(text1306, "%.0fv   ", hvLevel * POWER_CONVERT);
+				ST7735_WriteString(60, 33, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
 				#ifdef ZABBIX_ENABLE
 				/* Часы */
 				HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
@@ -1295,19 +1298,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(Eth_CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Eth_rst_Pin ST7735S_CS_Pin ST7735S_DC_Pin POWER_PULSE_Pin */
-  GPIO_InitStruct.Pin = Eth_rst_Pin|ST7735S_CS_Pin|ST7735S_DC_Pin|POWER_PULSE_Pin;
+  /*Configure GPIO pins : Eth_rst_Pin ST7735S_CS_Pin ST7735S_DC_Pin */
+  GPIO_InitStruct.Pin = Eth_rst_Pin|ST7735S_CS_Pin|ST7735S_DC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LED_Pin */
-  GPIO_InitStruct.Pin = LED_Pin;
+  /*Configure GPIO pins : LED_Pin POWER_PULSE_Pin */
+  GPIO_InitStruct.Pin = LED_Pin|POWER_PULSE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);

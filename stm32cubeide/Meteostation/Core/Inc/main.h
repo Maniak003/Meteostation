@@ -84,7 +84,7 @@ extern "C" {
 #define LED_PULSE LED_GPIO_Port->BSRR = (uint32_t)LED_Pin; LED_GPIO_Port->BSRR = (uint32_t)LED_Pin << 16u;
 #define TP_PULSE GPIOA->BSRR = (uint32_t)GPIO_PIN_15; GPIOA->BSRR = (uint32_t)GPIO_PIN_15 << 16u;
 #define POWER_PULSE POWER_PULSE_GPIO_Port->BSRR = (uint32_t)POWER_PULSE_Pin; POWER_PULSE_GPIO_Port->BSRR = (uint32_t)POWER_PULSE_Pin << 16u;
-#define POWER_VOLTAGE 850
+#define POWER_VOLTAGE 870
 #define POWER_CONVERT 0.473f
 #define TRUST_INTERVAL 900 /* 3 sigma - 10%*/
 #define GM_CPS2URh 9.6
@@ -176,7 +176,7 @@ union {
 #define ZABBIXAGHOST	"Meteo"  // Default hostname.
 #define ZABBIXPORT		10051
 #define ZABBIXMAXLEN	128
-#define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xef
+#define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xf1
 
 //#define CO2_DEBUG
 
