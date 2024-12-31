@@ -1,0 +1,6 @@
+sntp.c:220:6:SNTP_init	16	static
+sntp.c:319:6:secToDate	16	static
+sntp.c:75:6:get_seconds_from_ntp_server	8	static
+sntp.c:253:8:SNTP_run	48	static
+sntp.c:330:6:calcdatetime	48	static
+sntp.c:416:8:changedatetime_to_seconds	28	static

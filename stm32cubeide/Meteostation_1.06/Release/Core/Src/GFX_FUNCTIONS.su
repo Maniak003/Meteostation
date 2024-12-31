@@ -1,0 +1,16 @@
+GFX_FUNCTIONS.c:7:6:drawPixel	0	static
+GFX_FUNCTIONS.c:12:6:fillRect	4	static
+GFX_FUNCTIONS.c:31:6:writePixel	0	static
+GFX_FUNCTIONS.c:36:6:writeLine	56	static
+GFX_FUNCTIONS.c:76:7:drawFastVLine	16	static
+GFX_FUNCTIONS.c:80:7:drawFastHLine	16	static
+GFX_FUNCTIONS.c:85:6:drawLine	16	static
+GFX_FUNCTIONS.c:98:6:drawCircle	56	static
+GFX_FUNCTIONS.c:132:6:drawCircleHelper	56	static
+GFX_FUNCTIONS.c:168:6:fillCircleHelper	64	static
+GFX_FUNCTIONS.c:205:6:fillCircle	32	static
+GFX_FUNCTIONS.c:213:6:drawRect	24	static
+GFX_FUNCTIONS.c:221:6:drawRoundRect	64	static
+GFX_FUNCTIONS.c:238:6:fillRoundRect	56	static
+GFX_FUNCTIONS.c:250:6:drawTriangle	40	static
+GFX_FUNCTIONS.c:258:6:fillTriangle	80	static
