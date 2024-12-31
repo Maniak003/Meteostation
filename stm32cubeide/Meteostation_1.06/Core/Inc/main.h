@@ -93,7 +93,7 @@ extern "C" {
 #define MEAS_CO2_INTERVAL1 1000
 #define MEAS_CO2_INTERVAL2 5000
 #define ZABB_MEAS_INTERVAL 10000
-#define NTP_INTERVAL 360000 /* 0.1 час */
+#define NTP_INTERVAL 60000 /* 0.1 час */
 #define CO2_NOMINAL 800.0f
 #define CO2_MAXIMUM 1000.0f
 /* USER CODE END ET */

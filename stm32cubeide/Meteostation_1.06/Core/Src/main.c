@@ -89,7 +89,7 @@ RTC_TimeTypeDef sTime = {0};
 RTC_DateTypeDef DateToUpdate = {0};
 char trans_str[64] = {0,};
 bool gm_ready = FALSE;
-bool first_start = TRUE;
+bool first_start = TRUE, fist_time_show = TRUE;
 
 /* USER CODE END PV */
 
@@ -834,31 +834,28 @@ int main(void)
 	  	  	}
 		#ifdef ZABBIX_ENABLE
 	  	/* Настройка времени через NTP  */
-		if ((HAL_GetTick() - ntp_interval > NTP_INTERVAL) || first_start) {
-			first_start = FALSE;
-			//ntp_interval = HAL_GetTick();
+		if ((HAL_GetTick() - ntp_interval > NTP_INTERVAL) || fist_time_show) {
+			fist_time_show = FALSE;
+			ntp_interval = HAL_GetTick();
 			//sprintf(text1306, "%lu", ntp_interval);
 			//ST7735_WriteString(0, 110, text1306, Font_7x10, ST7735_WHITE, ST7735_BLACK);
-
+			HAL_Delay(1000);
 			if (SNTP_run(&timeNTP) == 1) {
 				sTime.Hours = timeNTP.hh;
 				sTime.Minutes = timeNTP.mm;
 				sTime.Seconds = timeNTP.ss;
 				HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+				ST7735_WriteString(0, 100, "NTP", Font_7x10, ST7735_BLUE, ST7735_BLACK);
 			} else {
-				SNTP_init(0, ntp_server, 28, gDATABUF);
-				first_start = TRUE;
+				fist_time_show = TRUE;
+				ST7735_WriteString(0, 100, "RTC", Font_7x10, ST7735_RED, ST7735_BLACK);
 			}
 		}
 		#ifdef DISPLAY_ST7735S
 		/* Часы */
-		if (! first_start) {
-			HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-			sprintf(text1306, "%.2i:%.2i", sTime.Hours, sTime.Minutes);
-			ST7735_WriteString(24, 88, text1306, Font_16x26, ST7735_BLUE, ST7735_BLACK);
-		} else {
-			ST7735_WriteString(38, 88, "N/A", Font_16x26, ST7735_BLUE, ST7735_BLACK);
-		}
+		HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+		sprintf(text1306, "%.2i:%.2i", sTime.Hours, sTime.Minutes);
+		ST7735_WriteString(24, 88, text1306, Font_16x26, ST7735_BLUE, ST7735_BLACK);
 		#endif
 		#if defined(TMP117_ENABLE) || defined(BME280_ENABLE)
 		if (HAL_GetTick() - zabb_interval > ZABB_MEAS_INTERVAL) {
