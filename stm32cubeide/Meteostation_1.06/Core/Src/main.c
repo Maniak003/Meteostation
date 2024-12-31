@@ -67,10 +67,11 @@ UART_HandleTypeDef huart1;
 /* USER CODE BEGIN PV */
 HAL_StatusTypeDef	flash_ok;
 char uart_buffer[10] = {0,};
+char buff_anem[50] = {0,};
 char SndBuffer[200] = {0,};
 char text1306[16];
 uint16_t gm_counter = 0;
-uint32_t gm_interval = 0, ntp_interval = 0, zabb_interval = 0;
+uint32_t gm_interval = 0, ntp_interval = 0, zabb_interval = 0, anem_interval = 0;
 float gm_cps = 0;
 sSensorMeasurement_t messuremetData;
 uint16_t CO2;
@@ -89,7 +90,8 @@ RTC_TimeTypeDef sTime = {0};
 RTC_DateTypeDef DateToUpdate = {0};
 char trans_str[64] = {0,};
 bool gm_ready = FALSE;
-bool first_start = TRUE, fist_time_show = TRUE;
+bool first_start = TRUE, fist_time_show = TRUE, first_time_anem = TRUE;
+int tot_bytes = 0;
 
 /* USER CODE END PV */
 
@@ -280,6 +282,31 @@ uint8_t sendToZabbix(uint8_t * addr, char * host, char * key, float value) {
     return(0);
 }
 
+void getDataFromAnemometer () {
+	//ANEMOMETERPORT
+    uint8_t tcp_socket = ANM_SOCKET;
+    uint8_t code = socket(tcp_socket, Sn_MR_TCP, 10889, 0);
+    tot_bytes = 0;
+    if(code != tcp_socket) {
+        return;
+    }
+    code = connect(tcp_socket, net_info.zabbix, ANEMOMETERPORT);
+    if(code != SOCK_OK) {
+        close(tcp_socket);
+        return;
+    }
+	for(;;) {
+		int32_t nbytes = recv(tcp_socket, (uint8_t*) &buff_anem, sizeof(buff_anem) - 1);
+		tot_bytes += nbytes;
+		if(nbytes == SOCKERR_SOCKSTATUS) {
+			break;
+		}
+
+	}
+	if(tot_bytes > 3) {
+	}
+	close(tcp_socket);
+}
 
 
 void init_w5500() {
@@ -833,6 +860,45 @@ int main(void)
 				//HAL_IWDG_Refresh(&hiwdg);
 	  	  	}
 		#ifdef ZABBIX_ENABLE
+		if ((HAL_GetTick() - anem_interval > ANEM_INTERVAL) || first_time_anem) {
+			first_time_anem = FALSE;
+			anem_interval = HAL_GetTick();
+			getDataFromAnemometer();
+			if (tot_bytes > 0) {
+				char tmp_buff[6];
+				int j = 0, k = 0;
+				uint16_t yy;
+				for (int i = 0; i < sizeof(buff_anem); i++) {
+					if (buff_anem[i] == 0x0A) {
+						tmp_buff[j] = 0x00;
+						j = 0;
+						switch (k) {
+						case 0:
+							sprintf(text1306, "Temp: %s   ", tmp_buff);
+							yy = 44;
+							break;
+						case 1:
+							sprintf(text1306, "Wind: %s   ", tmp_buff);
+							yy = 55;
+							break;
+						case 2:
+							sprintf(text1306, "Dir : %s   ", tmp_buff);
+							yy = 66;
+							break;
+						}
+						ST7735_WriteString(0, yy, text1306, Font_7x10, ST7735_BLUE, ST7735_BLACK);
+						k++;
+					} else {
+						tmp_buff[j++] = buff_anem[i];
+					}
+					if (k >= 3) {
+						break;
+					}
+				}
+				//sprintf(text1306, "%s ", buff_anem);
+				//ST7735_WriteString(0, 55, text1306, Font_7x10, ST7735_BLUE, ST7735_BLACK);
+			}
+		}
 	  	/* Настройка времени через NTP  */
 		if ((HAL_GetTick() - ntp_interval > NTP_INTERVAL) || fist_time_show) {
 			fist_time_show = FALSE;

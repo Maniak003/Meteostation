@@ -90,6 +90,7 @@ extern "C" {
 #define GM_CPS2URh 9.6
 #define GM_SELF_FONE 0.5	/* Собственный фон трубки */
 #define MEAS_INTERVAL 1000
+#define ANEM_INTERVAL 10000		/* Интервал опроса анемометра */
 #define MEAS_CO2_INTERVAL1 1000
 #define MEAS_CO2_INTERVAL2 5000
 #define ZABB_MEAS_INTERVAL 10000
@@ -168,6 +169,7 @@ union {
 #define DHCP_SOCKET     0
 #define DNS_SOCKET      1
 #define TCP_SOCKET		2
+#define ANM_SOCKET		3
 #define _DHCP_DEBUG_
 
 //#define ZABBIX_DEBUG
@@ -175,6 +177,7 @@ union {
 #define ZABBIX_ENABLE
 #define ZABBIXAGHOST	"Meteo"  // Default hostname.
 #define ZABBIXPORT		10051
+#define ANEMOMETERPORT	1600
 #define ZABBIXMAXLEN	128
 #define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xf6
 
