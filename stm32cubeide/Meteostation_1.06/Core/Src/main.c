@@ -867,7 +867,7 @@ int main(void)
 			if (tot_bytes > 0) {
 				char tmp_buff[6];
 				int j = 0, k = 0;
-				uint16_t yy;
+				uint16_t yy = 0;
 				for (int i = 0; i < sizeof(buff_anem); i++) {
 					if (buff_anem[i] == 0x0A) {
 						tmp_buff[j] = 0x00;
