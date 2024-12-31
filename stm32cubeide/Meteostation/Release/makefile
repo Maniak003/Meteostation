@@ -77,8 +77,8 @@ all:
 main-build: Meteostation.elf secondary-outputs
 
 # Tool invocations
-Meteostation.elf: $(OBJS) $(USER_OBJS) /home/ed/work/gitprojects/meteostation/stm32cubeide/Meteostation/STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "Meteostation.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/ed/work/gitprojects/meteostation/stm32cubeide/Meteostation/STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Meteostation.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Meteostation.elf: $(OBJS) $(USER_OBJS) /home/ed/work/github/meteostation/stm32cubeide/Meteostation/STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "Meteostation.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/ed/work/github/meteostation/stm32cubeide/Meteostation/STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Meteostation.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

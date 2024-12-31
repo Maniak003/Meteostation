@@ -139,6 +139,7 @@ void Error_Handler(void);
 #define BME280_SCL_GPIO_Port GPIOB
 #define BME280_SDA_Pin GPIO_PIN_9
 #define BME280_SDA_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 //uint16_t Z12, Z21, Z23, Z32, Z34, Z43, Z41, Z14;
@@ -176,10 +177,10 @@ union {
 #define ZABBIXAGHOST	"Meteo"  // Default hostname.
 #define ZABBIXPORT		10051
 #define ZABBIXMAXLEN	128
-#define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xf1
+#define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xf6
 
 //#define CO2_DEBUG
-
+#define OUTDOOR
 
 /* USER CODE END Private defines */
 
@@ -188,5 +189,3 @@ union {
 #endif
 
 #endif /* __MAIN_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
