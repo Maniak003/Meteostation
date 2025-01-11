@@ -179,7 +179,7 @@ union {
 #define ZABBIXPORT		10051
 #define ANEMOMETERPORT	1600
 #define ZABBIXMAXLEN	128
-#define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xf6
+#define MAC_ADDRESS		0x00, 0x11, 0x22, 0x33, 0x44, 0xf7
 
 //#define CO2_DEBUG
 
